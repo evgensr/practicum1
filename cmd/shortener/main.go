@@ -31,14 +31,6 @@ func handlerURL(w http.ResponseWriter, r *http.Request) {
 		}
 
 		log.Println(string(b))
-
-		// Call ParseForm() to parse the raw query and update r.PostForm and r.Form.
-		if err := r.ParseForm(); err != nil {
-			log.Printf("ParseForm() err: %v", err)
-			return
-		}
-
-		// address := r.FormValue("address")
 		address := string(b)
 		hash := getHash(address)
 		log.Println(hash)
@@ -47,13 +39,7 @@ func handlerURL(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(201)
 		w.Write([]byte("http://localhost:" + port + "/" + hash))
 
-		// mapURL[]
 	case "GET":
-		// hash := getHash(r.RequestURI)
-		// url := getHash(r.RequestURI)
-		// url := r.RequestURI
-		// inputFmt := r.RequestURI[1:]
-		//log.Println(inputFmt)
 		urlHash := r.RequestURI[1:]
 		log.Println(urlHash)
 
@@ -68,24 +54,8 @@ func handlerURL(w http.ResponseWriter, r *http.Request) {
 			delete(mapURL, urlHash)
 			w.WriteHeader(400)
 		}
-		// md5.Sum()
-		// data := []byte(r.RequestURI)
-		// h := md5.New()
-		// h.Sum(data)
-		// fmt.Println(time.RFC822Z, md5.Sum(data), h.Sum(data), h.Sum([]byte("/12")))
-		// fmt.Println("GET")
 	}
 
-	// fmt.Println(r.Header)
-	// fmt.Println(time.RFC822Z, r.RequestURI)
-
-	// w.Write([]byte("<h1>Hello, World</h1>"))
-}
-
-func form(w http.ResponseWriter, r *http.Request) {
-
-	log.Println("form")
-	http.ServeFile(w, r, "form.html")
 }
 
 func getHash(text string) string {
@@ -100,11 +70,8 @@ func main() {
 
 	// маршрутизация запросов обработчику
 	http.HandleFunc("/", handlerURL)
-	http.HandleFunc("/create", form)
 
-	http.Handle("/favicon.ico", http.NotFoundHandler())
-
-	// запуск сервера с адресом localhost, порт 8081
+	// запуск сервера с адресом localhost, порт port
 	err := http.ListenAndServe(":"+port, nil)
 
 	if err != nil {
