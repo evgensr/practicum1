@@ -3,6 +3,7 @@ package main
 import (
 	"crypto/md5"
 	"encoding/hex"
+	"io"
 	"log"
 	"net/http"
 )
@@ -21,13 +22,24 @@ func handlerURL(w http.ResponseWriter, r *http.Request) {
 	case "POST":
 		log.Println("post request")
 
+		// читаем Body
+		b, err := io.ReadAll(r.Body)
+		// обрабатываем ошибку
+		if err != nil {
+			http.Error(w, err.Error(), 500)
+			return
+		}
+
+		log.Println(string(b))
+
 		// Call ParseForm() to parse the raw query and update r.PostForm and r.Form.
 		if err := r.ParseForm(); err != nil {
 			log.Printf("ParseForm() err: %v", err)
 			return
 		}
 
-		address := r.FormValue("address")
+		// address := r.FormValue("address")
+		address := string(b)
 		hash := getHash(address)
 		log.Println(hash)
 		mapURL[hash] = address
