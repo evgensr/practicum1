@@ -32,7 +32,7 @@ func handlerURL(w http.ResponseWriter, r *http.Request) {
 
 		log.Println(string(b))
 		address := string(b)
-		hash := getHash(address)
+		hash := GetHash(address)
 		log.Println(hash)
 		mapURL[hash] = address
 		log.Printf("Address = %s\n", address)
@@ -58,7 +58,7 @@ func handlerURL(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func getHash(text string) string {
+func GetHash(text string) string {
 	hasher := md5.New()
 	hasher.Write([]byte(text))
 	return hex.EncodeToString(hasher.Sum(nil))
