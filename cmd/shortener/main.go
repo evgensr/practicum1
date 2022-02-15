@@ -14,7 +14,6 @@ const (
 	port     = "8080"
 	host     = "localhost"
 	protocol = "http"
-	limit    = 4096
 )
 
 var mapURL = make(map[string]string)
@@ -76,13 +75,6 @@ func HandlerPOST(w http.ResponseWriter, r *http.Request) {
 
 	log.Println(string(b))
 	address := string(b)
-
-	postBodyLen := len(address)
-	if postBodyLen > 4096 {
-		log.Println("big post request")
-		http.Error(w, err.Error(), 500)
-		return
-	}
 
 	hash := GetHash(address)
 	log.Println(hash)
