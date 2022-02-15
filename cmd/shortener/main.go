@@ -63,7 +63,7 @@ func handlerURL(w http.ResponseWriter, r *http.Request) {
 
 }
 
-// handlerPOST — обработчик запроса.
+// HandlerPOST — обработчик запроса.
 func HandlerPOST(w http.ResponseWriter, r *http.Request) {
 	log.Println("post request")
 	// читаем Body
@@ -77,7 +77,8 @@ func HandlerPOST(w http.ResponseWriter, r *http.Request) {
 	log.Println(string(b))
 	address := string(b)
 
-	if len(address) > limit {
+	postBodyLen := len(address)
+	if postBodyLen > 4096 {
 		log.Println("big post request")
 		http.Error(w, err.Error(), 500)
 		return
