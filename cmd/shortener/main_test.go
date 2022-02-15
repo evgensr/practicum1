@@ -46,7 +46,7 @@ func Test_main(t *testing.T) {
 		request  string
 		response string
 	}
-	baseUrl := "http://localhost:8080/"
+	baseURL := "http://localhost:8080/"
 
 	// создаём массив тестов: имя и желаемый результат
 	tests := []struct {
@@ -59,7 +59,7 @@ func Test_main(t *testing.T) {
 			want: want{
 				code:     201,
 				request:  `https://ya.ru`,
-				response: baseUrl + "e98192e19505472476a49f10388428ab",
+				response: baseURL + "e98192e19505472476a49f10388428ab",
 			},
 		},
 		{
@@ -67,7 +67,7 @@ func Test_main(t *testing.T) {
 			want: want{
 				code:     201,
 				request:  `https://habr.ru`,
-				response: baseUrl + "98981d87735b7f871c516eaf9b6bf461",
+				response: baseURL + "98981d87735b7f871c516eaf9b6bf461",
 			},
 		},
 	}
