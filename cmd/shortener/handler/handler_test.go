@@ -1,8 +1,8 @@
-package main_test
+package handler_test
 
 import (
 	"bytes"
-	main "github.com/evgensr/practicum1/cmd/shortener"
+	"github.com/evgensr/practicum1/cmd/shortener/handler"
 	"io"
 	"net/http"
 	"net/http/httptest"
@@ -31,7 +31,7 @@ func Test_getHash(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := main.GetHash(tt.args.text); got != tt.want {
+			if got := handler.GetHash(tt.args.text); got != tt.want {
 				t.Errorf("getHash() = %v, want %v", got, tt.want)
 			}
 		})
@@ -82,7 +82,7 @@ func Test_main(t *testing.T) {
 			request := httptest.NewRequest(http.MethodPost, "/", bytes.NewReader(reqBody))
 
 			// определяем хендлер
-			h := http.HandlerFunc(main.HandlerPOST)
+			h := http.HandlerFunc(handler.HandlerPOST)
 			// запускаем сервер
 			h.ServeHTTP(w, request)
 			res := w.Result()
