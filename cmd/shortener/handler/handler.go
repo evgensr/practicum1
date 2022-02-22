@@ -10,8 +10,6 @@ import (
 	"sync"
 )
 
-var mapURL = make(map[string]string)
-
 const (
 	Port     = "8080"
 	Host     = "localhost"
@@ -33,27 +31,27 @@ func NewRWMap() *RWMap {
 }
 
 // Get is a wrapper for getting the value from the underlying map
-func (r RWMap) Get(key string) string {
-	r.RLock()
-	defer r.RUnlock()
-	return r.m[key]
+func (c RWMap) Get(key string) string {
+	c.RLock()
+	defer c.RUnlock()
+	return c.m[key]
 }
 
 // Set is a wrapper for setting the value of a key in the underlying map
-func (r RWMap) Set(key string, val string) {
-	r.Lock()
-	defer r.Unlock()
-	r.m[key] = val
+func (c RWMap) Set(key string, val string) {
+	c.Lock()
+	defer c.Unlock()
+	c.m[key] = val
 }
 
 func GetHash(text string) string {
-	hasher := md5.New()
-	hasher.Write([]byte(text))
-	return hex.EncodeToString(hasher.Sum(nil))
+	hash := md5.New()
+	hash.Write([]byte(text))
+	return hex.EncodeToString(hash.Sum(nil))
 }
 
 // HandlerGET — обработчик запроса.
-func (m RWMap) HandlerGET(w http.ResponseWriter, r *http.Request) {
+func (c RWMap) HandlerGET(w http.ResponseWriter, r *http.Request) {
 
 	urlHash := chi.URLParam(r, "hash")
 	log.Println(urlHash)
@@ -64,7 +62,7 @@ func (m RWMap) HandlerGET(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var url string
-	url = m.Get(urlHash)
+	url = c.Get(urlHash)
 
 	if len(url) > 0 {
 		log.Println("result ", url)
@@ -78,7 +76,7 @@ func (m RWMap) HandlerGET(w http.ResponseWriter, r *http.Request) {
 }
 
 // HandlerPOST — обработчик запроса.
-func (m RWMap) HandlerPOST(w http.ResponseWriter, r *http.Request) {
+func (c RWMap) HandlerPOST(w http.ResponseWriter, r *http.Request) {
 
 	log.Println("post request")
 	// читаем Body
@@ -95,7 +93,7 @@ func (m RWMap) HandlerPOST(w http.ResponseWriter, r *http.Request) {
 	hash := GetHash(address)
 	log.Println(hash)
 	// конкуретная запись
-	m.Set(hash, address)
+	c.Set(hash, address)
 
 	log.Printf("Address = %s\n", address)
 	w.WriteHeader(201)
