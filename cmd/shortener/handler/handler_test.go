@@ -47,6 +47,7 @@ func Test_main(t *testing.T) {
 		response string
 	}
 	baseURL := "http://localhost:8080/"
+	counter := handler.NewRWMap()
 
 	// создаём массив тестов: имя и желаемый результат
 	tests := []struct {
@@ -82,7 +83,7 @@ func Test_main(t *testing.T) {
 			request := httptest.NewRequest(http.MethodPost, "/", bytes.NewReader(reqBody))
 
 			// определяем хендлер
-			h := http.HandlerFunc(handler.HandlerPOST)
+			h := http.HandlerFunc(counter.HandlerPOST)
 			// запускаем сервер
 			h.ServeHTTP(w, request)
 			res := w.Result()

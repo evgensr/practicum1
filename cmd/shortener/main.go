@@ -8,17 +8,18 @@ import (
 	"net/http"
 )
 
-// handlerURL удалил, он был написан на первом этапе, без использования фрейворка.
-
 func main() {
+
+	// Init
+	counter := handler.NewRWMap()
 
 	log.Println("start server")
 
 	r := chi.NewRouter()
 	r.Use(middleware.Logger)
 
-	r.Get("/{hash}", handler.HandlerGET)
-	r.Post("/", handler.HandlerPOST)
+	r.Get("/{hash}", counter.HandlerGET)
+	r.Post("/", counter.HandlerPOST)
 	err := http.ListenAndServe(":"+handler.Port, r)
 
 	if err != nil {
