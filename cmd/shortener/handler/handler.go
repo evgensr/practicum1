@@ -31,14 +31,14 @@ func NewRWMap() *RWMap {
 }
 
 // Get is a wrapper for getting the value from the underlying map
-func (c RWMap) Get(key string) string {
+func (c *RWMap) Get(key string) string {
 	c.RLock()
 	defer c.RUnlock()
 	return c.m[key]
 }
 
 // Set is a wrapper for setting the value of a key in the underlying map
-func (c RWMap) Set(key string, val string) {
+func (c *RWMap) Set(key string, val string) {
 	c.Lock()
 	defer c.Unlock()
 	c.m[key] = val
@@ -51,7 +51,7 @@ func GetHash(text string) string {
 }
 
 // HandlerGET — обработчик запроса.
-func (c RWMap) HandlerGET(w http.ResponseWriter, r *http.Request) {
+func (c *RWMap) HandlerGET(w http.ResponseWriter, r *http.Request) {
 
 	urlHash := chi.URLParam(r, "hash")
 	log.Println(urlHash)
@@ -61,8 +61,7 @@ func (c RWMap) HandlerGET(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	var url string
-	url = c.Get(urlHash)
+	url := c.Get(urlHash)
 
 	if len(url) > 0 {
 		log.Println("result ", url)
@@ -76,7 +75,7 @@ func (c RWMap) HandlerGET(w http.ResponseWriter, r *http.Request) {
 }
 
 // HandlerPOST — обработчик запроса.
-func (c RWMap) HandlerPOST(w http.ResponseWriter, r *http.Request) {
+func (c *RWMap) HandlerPOST(w http.ResponseWriter, r *http.Request) {
 
 	log.Println("post request")
 	// читаем Body
