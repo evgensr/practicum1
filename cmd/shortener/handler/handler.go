@@ -3,6 +3,9 @@ package handler
 import (
 	"crypto/md5"
 	"encoding/hex"
+	"encoding/json"
+	"github.com/asaskevich/govalidator"
+	"github.com/caarlos0/env/v6"
 	"github.com/go-chi/chi/v5"
 	"io"
 	"log"
@@ -15,6 +18,19 @@ const (
 	Host     = "localhost"
 	Protocol = "http"
 )
+
+type MyStruct struct {
+	URL string `json:"url" valid:"url"`
+}
+
+type MyStructResponse struct {
+	URL string `json:"response" valid:"url"`
+}
+
+type Config struct {
+	ServerAddress string `env:"SERVER_ADDRESS"`
+	BaseURL       string `env:"BASE_URL"`
+}
 
 // https://riptutorial.com/go/example/3423/concurrent-access-of-maps
 // https://habr.com/ru/post/359078/
@@ -97,5 +113,49 @@ func (c *RWMap) HandlerPOST(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Address = %s\n", address)
 	w.WriteHeader(201)
 	w.Write([]byte(Protocol + "://" + Host + ":" + Port + "/" + hash))
+
+}
+
+// HandlerPOST2 — обработчик запроса.
+func (c *RWMap) HandlerPOST2(w http.ResponseWriter, r *http.Request) {
+
+	var cfg Config
+
+	err := env.Parse(&cfg)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	decoder := json.NewDecoder(r.Body)
+	var u MyStruct
+	err = decoder.Decode(&u)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	// проверяем на валидность URL
+	_, err = govalidator.ValidateStruct(u)
+	if err != nil {
+		http.Error(w, err.Error(), 500)
+		return
+	}
+
+	// log.Println("json ", u.URL)
+
+	hash := GetHash(u.URL)
+	log.Println(hash)
+	// конкуретная запись
+	c.Set(hash, u.URL)
+
+	log.Printf("Address = %s\n", u.URL)
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusCreated)
+
+	data := MyStructResponse{
+		URL: cfg.BaseURL + hash,
+	}
+	json.NewEncoder(w).Encode(data)
 
 }
