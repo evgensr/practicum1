@@ -9,12 +9,15 @@ import (
 type RWMap struct {
 	mutex sync.RWMutex
 	row   map[string]string
+	// config *app.Config
 }
 
 // New создание структуры
-func New() RWMap {
-	return RWMap{
+func New(param string) *RWMap {
+
+	return &RWMap{
 		row: make(map[string]string),
+		// config: config,
 	}
 }
 

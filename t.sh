@@ -2,6 +2,7 @@
 
 export SERVER_ADDRESS=0.0.0.0:8080
 export BASE_URL=http://localhost:8080/
+export FILE_STORAGE_PATH=123.txt
 
 
 

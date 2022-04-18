@@ -11,8 +11,9 @@ import (
 
 // RWMap структура Mutex
 type RWMap struct {
-	mutex sync.RWMutex
-	row   map[string]string
+	mutex           sync.RWMutex
+	row             map[string]string
+	fileStoragePath string
 }
 
 type Row struct {
@@ -20,17 +21,19 @@ type Row struct {
 	Value string `json:"value"`
 }
 
-func New() RWMap {
+func New(param string) *RWMap {
+	fileStoragePath := param
 	// открывам файл
-	file, err := os.Open("1234.txt")
+	file, err := os.Open(fileStoragePath)
 	// закрываем файл
 	defer file.Close()
 
 	// если файл не найдет, возврощаем пустую мапу
 	if err != nil {
 		log.Println(err)
-		return RWMap{
-			row: make(map[string]string),
+		return &RWMap{
+			row:             make(map[string]string),
+			fileStoragePath: fileStoragePath,
 		}
 	}
 
@@ -55,8 +58,9 @@ func New() RWMap {
 
 	// spew.Dump(row)
 	// возврощаем заполненую мапу
-	return RWMap{
-		row: row,
+	return &RWMap{
+		row:             row,
+		fileStoragePath: fileStoragePath,
 	}
 }
 
@@ -100,7 +104,7 @@ func (c *RWMap) save(row Row) {
 		log.Println(err)
 	}
 
-	file, errFile := os.OpenFile("123.txt", os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0777)
+	file, errFile := os.OpenFile(c.fileStoragePath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0777)
 	if err != nil {
 		log.Println(errFile)
 	}

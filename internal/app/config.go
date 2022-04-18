@@ -18,3 +18,10 @@ type request struct {
 type response struct {
 	URL string `json:"response" valid:"url"`
 }
+
+type Storage interface {
+	Get(key string) string
+	Set(key string, val string)
+	Delete(key string) error
+	Debug()
+}

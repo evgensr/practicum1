@@ -5,6 +5,7 @@ import (
 	"github.com/asaskevich/govalidator"
 	"github.com/evgensr/practicum1/internal/helper"
 	"github.com/evgensr/practicum1/internal/store/file"
+	"github.com/evgensr/practicum1/internal/store/memory"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -17,17 +18,28 @@ type APIserver struct {
 	logger *logrus.Logger
 	router *mux.Router
 	// store  memory.RWMap
-	store file.RWMap
+	// store file.RWMap
+	store Storage
 }
 
 // New ...
 func New(config *Config) *APIserver {
+	var store Storage
+
+	// TODO: уловие в зависимости от конфига
+	param := config.FileStoragePath
+	if len(param) > 1 {
+		store = file.New(param)
+	} else {
+		store = memory.New(param)
+	}
+
 	return &APIserver{
 		config: config,
 		logger: logrus.New(),
 		router: mux.NewRouter(),
 		// store:  memory.New(),
-		store: file.New(),
+		store: store,
 	}
 }
 
@@ -44,7 +56,11 @@ func (s *APIserver) Start() error {
 		return err
 	}
 
-	s.logger.Info("staring api server")
+	s.logger.Info("SERVER_ADDRESS ", s.config.ServerAddress)
+	s.logger.Info("BASE_URL ", s.config.BaseURL)
+	s.logger.Info("FILE_STORAGE_PATH ", s.config.FileStoragePath)
+
+	s.logger.Info("Staring api server")
 	return http.ListenAndServe(s.config.ServerAddress, s.router)
 }
 
@@ -80,6 +96,7 @@ func (s *APIserver) HandlerGetURL(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(500)
 		return
 	}
+
 	url := s.store.Get(vars["hash"])
 
 	// s.store.Debug()
