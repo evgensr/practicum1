@@ -116,5 +116,8 @@ func (c *RWMap) save(row Row) {
 	// добавляем перенос строки
 	data = append(data, '\n')
 	_, err = file.Write(data)
+	if err != nil {
+		log.Println(err)
+	}
 
 }
