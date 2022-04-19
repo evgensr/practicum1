@@ -26,7 +26,12 @@ func New(param string) *RWMap {
 	// открывам файл
 	file, err := os.Open(fileStoragePath)
 	// закрываем файл
-	defer file.Close()
+	defer func() {
+		cerr := file.Close()
+		if err == nil {
+			err = cerr
+		}
+	}()
 
 	// если файл не найдет, возврощаем пустую мапу
 	if err != nil {
@@ -105,7 +110,7 @@ func (c *RWMap) save(row Row) {
 	}
 
 	file, errFile := os.OpenFile(c.fileStoragePath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0777)
-	if err != nil {
+	if errFile != nil {
 		log.Println(errFile)
 	}
 	// добавляем перенос строки
