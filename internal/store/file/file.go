@@ -11,7 +11,7 @@ import (
 
 // RWMap структура Mutex
 type RWMap struct {
-	mutex           sync.RWMutex
+	sync.RWMutex
 	row             map[string]string
 	fileStoragePath string
 }
@@ -71,15 +71,15 @@ func New(param string) *RWMap {
 
 // Get is a wrapper for getting the value from the underlying map
 func (c *RWMap) Get(key string) string {
-	c.mutex.RLock()
-	defer c.mutex.RUnlock()
+	c.RLock()
+	defer c.RUnlock()
 	return c.row[key]
 }
 
 // Set is a wrapper for setting the value of a key in the underlying map
 func (c *RWMap) Set(key string, val string) {
-	c.mutex.Lock()
-	defer c.mutex.Unlock()
+	c.Lock()
+	defer c.Unlock()
 
 	line := Row{
 		Key:   key,

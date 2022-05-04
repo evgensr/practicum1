@@ -2,11 +2,14 @@ package app
 
 import (
 	"compress/gzip"
+	"database/sql"
 	"encoding/json"
 	"github.com/asaskevich/govalidator"
 	"github.com/evgensr/practicum1/internal/helper"
 	"github.com/gorilla/mux"
+	_ "github.com/lib/pq" // ...
 	"io"
+	"log"
 	"net/http"
 	"strings"
 )
@@ -14,6 +17,11 @@ import (
 type gzipWriter struct {
 	http.ResponseWriter
 	Writer io.Writer
+}
+
+func (w gzipWriter) Write(b []byte) (int, error) {
+	// w.Writer будет отвечать за gzip-сжатие, поэтому пишем в него
+	return w.Writer.Write(b)
 }
 
 // HandlerGetURL получить по хешу ссылку
@@ -129,6 +137,7 @@ func (s *APIserver) HandlerSetURL() http.HandlerFunc {
 
 // GzipHandle gzip-сжатие ответа
 func (s *APIserver) GzipHandle(next http.Handler) http.Handler {
+	log.Println("user", s.user)
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// проверяем, что клиент поддерживает gzip-сжатие
 		if !strings.Contains(r.Header.Get("Accept-Encoding"), "gzip") {
@@ -152,4 +161,29 @@ func (s *APIserver) GzipHandle(next http.Handler) http.Handler {
 		// передаём обработчику страницы переменную типа gzipWriter для вывода данных
 		next.ServeHTTP(gzipWriter{ResponseWriter: w, Writer: gz}, r)
 	})
+}
+
+// HandlerPing получить по хешу ссылку
+func (s *APIserver) HandlerPing() http.HandlerFunc {
+
+	return func(w http.ResponseWriter, r *http.Request) {
+
+		// s.config.DatabaseDSN = "host=localhost user=postgres password=postgres dbname=restapi sslmode=disable"
+		log.Println("DatabaseDSN", s.config.DatabaseDSN)
+		db, err := sql.Open("postgres", s.config.DatabaseDSN)
+		if err != nil {
+			log.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		if err := db.Ping(); err != nil {
+			log.Println(err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+		return
+
+	}
+
 }
