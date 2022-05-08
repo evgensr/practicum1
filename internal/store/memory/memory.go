@@ -1,47 +1,69 @@
 package memory
 
 import (
-	"github.com/davecgh/go-spew/spew"
 	"sync"
 )
+
+type Box struct {
+	sync.RWMutex
+	Items           []Line
+	fileStoragePath string
+}
+type Line struct {
+	User   string `json:"user,omitempty"`
+	Url    string `json:"original_url"`
+	Short  string `json:"short_url"`
+	Status int    `json:"status"`
+}
 
 // RWMap структура Mutex
 type RWMap struct {
 	sync.RWMutex
-	row map[string]string
-	// config *app.Config
+	row             map[string]string
+	fileStoragePath string
 }
 
-// New создание структуры
-func New(param string) *RWMap {
+type Row struct {
+	Key   string `json:"key"`
+	Value string `json:"value"`
+}
 
-	return &RWMap{
-		row: make(map[string]string),
-		// config: config,
+func New(param string) *Box {
+
+	fileStoragePath := param
+
+	box := &Box{
+		fileStoragePath: fileStoragePath,
 	}
+
+	return box
+
 }
 
-// Get is a wrapper for getting the value from the underlying map
-func (c *RWMap) Get(key string) string {
-	c.RLock()
-	defer c.RUnlock()
-	return c.row[key]
+func (box *Box) addItem(item Line) []Line {
+	box.Items = append(box.Items, item)
+	return box.Items
 }
 
-// Set is a wrapper for setting the value of a key in the underlying map
-func (c *RWMap) Set(key string, val string) {
-	c.Lock()
-	defer c.Unlock()
-
-	if _, ok := c.row[key]; !ok {
-		c.row[key] = val
+func removeDuplicateElement(languages []string) []string {
+	result := make([]string, 0, len(languages))
+	temp := map[string]struct{}{}
+	for _, item := range languages {
+		if _, ok := temp[item]; !ok {
+			temp[item] = struct{}{}
+			result = append(result, item)
+		}
 	}
+
+	return result
 }
 
-func (c *RWMap) Delete(key string) error {
-	return nil
-}
+func fineDuplicate(items *Box, str string) bool {
 
-func (c *RWMap) Debug() {
-	spew.Dump(c.row)
+	for _, item := range items.Items {
+		if item.Short == str {
+			return false
+		}
+	}
+	return true
 }

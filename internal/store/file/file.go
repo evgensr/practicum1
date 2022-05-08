@@ -9,6 +9,18 @@ import (
 	"sync"
 )
 
+type Box struct {
+	sync.RWMutex
+	Items           []Line
+	fileStoragePath string
+}
+type Line struct {
+	User   string `json:"user,omitempty"`
+	Url    string `json:"original_url"`
+	Short  string `json:"short_url"`
+	Status int    `json:"status"`
+}
+
 // RWMap структура Mutex
 type RWMap struct {
 	sync.RWMutex
@@ -21,33 +33,33 @@ type Row struct {
 	Value string `json:"value"`
 }
 
-func New(param string) *RWMap {
+func New(param string) *Box {
+
 	fileStoragePath := param
+
+	box := &Box{
+		fileStoragePath: fileStoragePath,
+	}
+
 	// открывам файл
 	file, err := os.Open(fileStoragePath)
 	// закрываем файл
 	defer func() {
-		cerr := file.Close()
+		errCloseFile := file.Close()
 		if err == nil {
-			err = cerr
+			err = errCloseFile
 		}
 	}()
 
-	// если файл не найдет, возврощаем пустую мапу
+	// если файл не найдет, возврощаем пустую box
 	if err != nil {
-		log.Println(err)
-		return &RWMap{
-			row:             make(map[string]string),
-			fileStoragePath: fileStoragePath,
-		}
+		return box
 	}
 
 	// создаем новый сканер
 	fileScanner := bufio.NewScanner(file)
 	// создаем переменную для сканера из структуры Row
-	line := Row{}
-	// создаем мапу в которую будем писать
-	row := make(map[string]string)
+	line := Line{}
 
 	// скаринуем по 1 строчке
 	for fileScanner.Scan() {
@@ -57,67 +69,63 @@ func New(param string) *RWMap {
 		if err != nil {
 			log.Println(err)
 		}
-		// заполняем мапу
-		row[line.Key] = line.Value
+		// заполняем box
+		box.addItem(line)
 	}
+	spew.Dump(box)
 
-	// spew.Dump(row)
-	// возврощаем заполненую мапу
-	return &RWMap{
-		row:             row,
-		fileStoragePath: fileStoragePath,
-	}
+	return box
+
 }
 
-// Get is a wrapper for getting the value from the underlying map
-func (c *RWMap) Get(key string) string {
-	c.RLock()
-	defer c.RUnlock()
-	return c.row[key]
-}
+func save(nameFile string, line Line) error {
 
-// Set is a wrapper for setting the value of a key in the underlying map
-func (c *RWMap) Set(key string, val string) {
-	c.Lock()
-	defer c.Unlock()
-
-	line := Row{
-		Key:   key,
-		Value: val,
-	}
-
-	if _, err := c.row[key]; !err {
-		c.row[key] = val
-		c.save(line)
-	}
-}
-
-func (c *RWMap) Delete(key string) error {
-	return nil
-}
-
-func (c *RWMap) Debug() {
-	spew.Dump(c.row)
-}
-
-// save ...
-func (c *RWMap) save(row Row) {
-
-	data, err := json.Marshal(row)
-
-	if err != nil {
-		log.Println(err)
-	}
-
-	file, errFile := os.OpenFile(c.fileStoragePath, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0777)
+	file, errFile := os.OpenFile(nameFile, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0777)
 	if errFile != nil {
 		log.Println(errFile)
+		return errFile
 	}
+	data, err := json.Marshal(line)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+
 	// добавляем перенос строки
 	data = append(data, '\n')
 	_, err = file.Write(data)
 	if err != nil {
 		log.Println(err)
+		return err
+	}
+	return nil
+
+}
+
+func (box *Box) addItem(item Line) []Line {
+	box.Items = append(box.Items, item)
+	return box.Items
+}
+
+func removeDuplicateElement(languages []string) []string {
+	result := make([]string, 0, len(languages))
+	temp := map[string]struct{}{}
+	for _, item := range languages {
+		if _, ok := temp[item]; !ok {
+			temp[item] = struct{}{}
+			result = append(result, item)
+		}
 	}
 
+	return result
+}
+
+func fineDuplicate(items *Box, str string) bool {
+
+	for _, item := range items.Items {
+		if item.Short == str {
+			return false
+		}
+	}
+	return true
 }

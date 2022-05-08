@@ -1,18 +1,19 @@
 package app
 
 import (
+	"context"
+	"database/sql"
 	"encoding/hex"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"github.com/evgensr/practicum1/internal/helper"
-	"github.com/evgensr/practicum1/internal/store/file"
-	"github.com/evgensr/practicum1/internal/store/memory"
+	"github.com/evgensr/practicum1/internal/store/pg"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	"github.com/sirupsen/logrus"
 	"log"
 	"net/http"
-	"os"
 	"time"
 )
 
@@ -23,7 +24,6 @@ type APIserver struct {
 	router       *mux.Router
 	store        Storage
 	sessionStore sessions.Store
-	user         []User
 }
 
 // New ...
@@ -33,10 +33,12 @@ func New(config *Config, sessionStore sessions.Store) *APIserver {
 
 	param := config.FileStoragePath
 	if len(param) > 1 {
-		store = file.New(param)
-	} else {
-		store = memory.New(param)
+		// store = pg.New(param)
+		store = pg.New(config.DatabaseDSN)
 	}
+	//} else {
+	//	store = memory.New(param)
+	//}
 
 	return &APIserver{
 		config:       config,
@@ -44,7 +46,6 @@ func New(config *Config, sessionStore sessions.Store) *APIserver {
 		router:       mux.NewRouter(),
 		store:        store,
 		sessionStore: sessionStore,
-		user:         []User{},
 	}
 }
 
@@ -55,14 +56,18 @@ func (s *APIserver) Start() error {
 		return err
 	}
 
+	if err := s.CreateTable(); err != nil {
+		log.Fatal(err)
+	}
+
 	s.configureRouter()
 
 	if err := s.configureStore(); err != nil {
 		return err
 	}
 
-	args := os.Args
-	fmt.Printf("All arguments: %v\n", args)
+	//args := os.Args
+	//fmt.Printf("All arguments: %v\n", args)
 
 	s.logger.Info("SERVER_ADDRESS ", s.config.ServerAddress)
 	s.logger.Info("BASE_URL ", s.config.BaseURL)
@@ -88,9 +93,11 @@ func (s *APIserver) configureRouter() {
 
 	s.router.Use(s.authenticateUser)
 	s.router.HandleFunc("/ping", s.HandlerPing())
+	s.router.HandleFunc("/api/user/urls", s.HandlerUserUrls())
 	s.router.HandleFunc("/{hash}", s.HandlerGetURL())
 
 	s.router.HandleFunc("/api/shorten", s.HandlerSetURL()).Methods("POST")
+	s.router.HandleFunc("/api/shorten/batch", s.HandlerShortenBatch()).Methods("POST")
 	s.router.Use(s.GzipHandle)
 
 }
@@ -121,9 +128,11 @@ func (s *APIserver) authenticateUser(next http.Handler) http.Handler {
 			id = string(decryptedCookie)
 		}
 
-		log.Println(id)
+		log.Println("user id: ", id)
 
-		next.ServeHTTP(w, r)
+		// next.ServeHTTP(w, r)
+
+		next.ServeHTTP(w, r.WithContext(context.WithValue(r.Context(), ctxKeyUser, id)))
 
 		// а можно упростить все на mux
 		// инициализация сессии
@@ -165,4 +174,29 @@ func (s *APIserver) respond(w http.ResponseWriter, r *http.Request, code int, da
 	if data != nil {
 		json.NewEncoder(w).Encode(data)
 	}
+}
+
+func (s *APIserver) CreateTable() error {
+	log.Println("config Database: ", s.config.DatabaseDSN)
+	db, err := sql.Open("postgres", s.config.DatabaseDSN)
+	if err != nil {
+		log.Println(err)
+		return err
+	}
+	if err := db.Ping(); err != nil {
+		log.Println(err)
+		return err
+	}
+
+	if _, err := db.Exec("CREATE TABLE  IF NOT EXISTS short" +
+		"(id serial primary key," +
+		"original_url varchar(4096) not null," +
+		"short_url varchar(32) UNIQUE not null," +
+		"user_id varchar(36) not null," +
+		"status smallint not null DEFAULT 0);"); err != nil {
+		return errors.New("error sql ")
+	}
+
+	return nil
+
 }

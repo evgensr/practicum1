@@ -1,6 +1,8 @@
 package app
 
-import "sync"
+import (
+	"github.com/evgensr/practicum1/internal/store/pg"
+)
 
 type Config struct {
 	ServerAddress   string `env:"SERVER_ADDRESS,required" envDefault:"0.0.0.0:8080"`
@@ -17,6 +19,7 @@ func NewConfig() Config {
 
 const (
 	sessionName = "practicum"
+	ctxKeyUser
 )
 
 type request struct {
@@ -29,19 +32,20 @@ type response struct {
 
 type Storage interface {
 	Get(key string) string
-	Set(key string, val string)
+	Set(url string, short string, user string)
 	Delete(key string) error
+	GetByUser(key string) []pg.Line
 	Debug()
 }
 
-// Url структура Mutex
-type Url struct {
-	ShortUrl    string `json:"short_url"`
-	OriginalUrl string `json:"original_url"`
-}
-
-type User struct {
-	sync.RWMutex
-	id  string
-	url []Url
-}
+//// Url структура Mutex
+//type Url struct {
+//	ShortUrl    string `json:"short_url"`
+//	OriginalUrl string `json:"original_url"`
+//}
+//
+//type User struct {
+//	sync.RWMutex
+//	id  string
+//	url []Url
+//}

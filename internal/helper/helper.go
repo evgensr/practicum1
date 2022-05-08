@@ -18,6 +18,10 @@ func GetHash(text string) string {
 	return hex.EncodeToString(hash.Sum(nil))
 }
 
+func GetShort(text string) string {
+	return GetHash(text)
+}
+
 func GeneratorUuid() string {
 	return uuid.New().String()
 }
