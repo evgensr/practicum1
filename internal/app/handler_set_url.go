@@ -41,6 +41,9 @@ func (s *APIserver) HandlerSetURL() http.HandlerFunc {
 		// получаем short
 		hash := helper.GetShort(request.URL)
 
+		// заголов ответа json
+		w.Header().Set("Content-Type", "application/json")
+
 		// id пользователя
 		userID := fmt.Sprintf("%v", r.Context().Value(ctxKeyUser))
 		// записываем в хранилище ключ значение
@@ -58,9 +61,6 @@ func (s *APIserver) HandlerSetURL() http.HandlerFunc {
 		}
 		// записываем в лог ответ
 		s.logger.Info("HandlerSetURL: response ", data)
-
-		// заголов ответа json
-		w.Header().Set("Content-Type", "application/json")
 
 		// пишем в http.ResponseWriter ответ json
 		json.NewEncoder(w).Encode(data)

@@ -130,11 +130,21 @@ func (s *APIserver) authenticateUser(next http.Handler) http.Handler {
 			fmt.Println("Cookie ", c.Value)
 			decoded, err := hex.DecodeString(c.Value)
 			if err != nil {
+
 				return
 			}
 			decryptedCookie, err := helper.Decrypted(decoded, s.config.SessionKey)
 			if err != nil {
-				return
+				// не смогли декодировать, устанавливаем новую куку и юзера
+				expiration := time.Now().Add(365 * 24 * time.Hour)
+				id = helper.GeneratorUUID()
+				encryptedCookie, err := helper.Encrypted([]byte(id), s.config.SessionKey)
+				if err != nil {
+					return
+				}
+				cookie := http.Cookie{Name: sessionName, Value: hex.EncodeToString(encryptedCookie), Expires: expiration}
+				http.SetCookie(w, &cookie)
+
 			}
 
 			id = string(decryptedCookie)
