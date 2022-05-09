@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/evgensr/practicum1/internal/helper"
+	"github.com/evgensr/practicum1/internal/store/memory"
 	"github.com/evgensr/practicum1/internal/store/pg"
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
@@ -32,13 +33,13 @@ func New(config *Config, sessionStore sessions.Store) *APIserver {
 	// sessionStore = sessions.NewCookieStore([]byte(config.SessionKey))
 
 	param := config.FileStoragePath
-	if len(param) > 1 {
-		// store = pg.New(param)
+	if len(config.DatabaseDSN) > 1 {
 		store = pg.New(config.DatabaseDSN)
+	} else if len(param) > 1 {
+		store = pg.New(param)
+	} else {
+		store = memory.New(param)
 	}
-	//} else {
-	//	store = memory.New(param)
-	//}
 
 	return &APIserver{
 		config:       config,

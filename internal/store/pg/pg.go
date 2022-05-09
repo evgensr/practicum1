@@ -2,6 +2,7 @@ package pg
 
 import (
 	"database/sql"
+	"github.com/evgensr/practicum1/internal/line"
 	"log"
 	"sync"
 )
@@ -12,12 +13,7 @@ type Box struct {
 	fileStoragePath string
 	db              *sql.DB
 }
-type Line struct {
-	User   string `json:"user,omitempty"`
-	Url    string `json:"original_url"`
-	Short  string `json:"short_url"`
-	Status int    `json:"status"`
-}
+type Line = line.Line
 
 func New(param string) *Box {
 

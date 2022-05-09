@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"encoding/json"
 	"github.com/davecgh/go-spew/spew"
+	"github.com/evgensr/practicum1/internal/line"
 	"log"
 	"os"
 	"sync"
@@ -14,12 +15,8 @@ type Box struct {
 	Items           []Line
 	fileStoragePath string
 }
-type Line struct {
-	User   string `json:"user,omitempty"`
-	Url    string `json:"original_url"`
-	Short  string `json:"short_url"`
-	Status int    `json:"status"`
-}
+
+type Line = line.Line
 
 // RWMap структура Mutex
 type RWMap struct {

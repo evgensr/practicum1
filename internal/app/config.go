@@ -1,8 +1,6 @@
 package app
 
-import (
-	"github.com/evgensr/practicum1/internal/store/pg"
-)
+import "github.com/evgensr/practicum1/internal/line"
 
 type Config struct {
 	ServerAddress   string `env:"SERVER_ADDRESS,required" envDefault:"0.0.0.0:8080"`
@@ -30,11 +28,13 @@ type response struct {
 	URL string `json:"response" valid:"url"`
 }
 
+type Line = line.Line
+
 type Storage interface {
 	Get(key string) string
 	Set(url string, short string, user string)
 	Delete(key string) error
-	GetByUser(key string) []pg.Line
+	GetByUser(key string) []Line
 	Debug()
 }
 
