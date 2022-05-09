@@ -10,7 +10,7 @@ func (box *Box) Set(url string, short string, user string) error {
 	box.RLock()
 	defer box.RUnlock()
 
-	if isNew := fineDuplicate(box, short); isNew == false {
+	if isNew := fineDuplicate(box, short); !isNew {
 		return errors.New("duplicate")
 	}
 

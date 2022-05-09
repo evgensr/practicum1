@@ -25,7 +25,6 @@ func (s *APIserver) HandlerPing() http.HandlerFunc {
 			return
 		}
 		w.WriteHeader(http.StatusOK)
-		return
 
 	}
 

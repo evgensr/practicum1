@@ -13,7 +13,7 @@ func (s *APIserver) HandlerShortenBatch() http.HandlerFunc {
 
 	type LineRequest struct {
 		CorrelationID string `json:"correlation_id"`
-		originalURL   string `json:"original_url"`
+		OriginalURL   string `json:"original_url"`
 	}
 
 	type LineResponse struct {
@@ -46,9 +46,9 @@ func (s *APIserver) HandlerShortenBatch() http.HandlerFunc {
 
 		for _, line := range lineRequest {
 			// получаем short
-			hash := helper.GetShort(line.originalURL)
+			hash := helper.GetShort(line.OriginalURL)
 			// записываем в хранилище ключ значение
-			s.store.Set(line.originalURL, hash, userID)
+			s.store.Set(line.OriginalURL, hash, userID)
 			log.Println(line)
 
 			lineResponse = append(lineResponse, LineResponse{

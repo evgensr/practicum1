@@ -122,6 +122,9 @@ func (s *APIserver) authenticateUser(next http.Handler) http.Handler {
 		} else {
 			fmt.Println("Cookie ", c.Value)
 			decoded, err := hex.DecodeString(c.Value)
+			if err != nil {
+				return
+			}
 			decryptedCookie, err := helper.Decrypted(decoded, "123")
 			if err != nil {
 				return

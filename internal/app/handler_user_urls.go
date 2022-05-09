@@ -11,7 +11,7 @@ import (
 func (s *APIserver) HandlerUserUrls() http.HandlerFunc {
 
 	type Line struct {
-		Url   string `json:"original_url"`
+		URL   string `json:"original_url"`
 		Short string `json:"short_url"`
 	}
 
@@ -24,7 +24,7 @@ func (s *APIserver) HandlerUserUrls() http.HandlerFunc {
 		if len(urls) > 0 {
 			for _, url := range urls {
 				line = append(line, Line{
-					Url:   url.URL,
+					URL:   url.URL,
 					Short: s.config.BaseURL + url.Short,
 				})
 			}
