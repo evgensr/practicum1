@@ -32,7 +32,7 @@ type Line = line.Line
 
 type Storage interface {
 	Get(key string) string
-	Set(url string, short string, user string)
+	Set(url string, short string, user string) error
 	Delete(key string) error
 	GetByUser(key string) []Line
 	Debug()

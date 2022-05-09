@@ -8,6 +8,7 @@ import (
 	"errors"
 	"fmt"
 	"github.com/evgensr/practicum1/internal/helper"
+	"github.com/evgensr/practicum1/internal/store/file"
 	"github.com/evgensr/practicum1/internal/store/memory"
 	"github.com/evgensr/practicum1/internal/store/pg"
 	"github.com/gorilla/mux"
@@ -36,7 +37,7 @@ func New(config *Config, sessionStore sessions.Store) *APIserver {
 	if len(config.DatabaseDSN) > 1 {
 		store = pg.New(config.DatabaseDSN)
 	} else if len(param) > 1 {
-		store = pg.New(param)
+		store = file.New(param)
 	} else {
 		store = memory.New(param)
 	}

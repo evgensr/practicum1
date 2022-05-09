@@ -1,14 +1,17 @@
 package file
 
-import "log"
+import (
+	"errors"
+	"log"
+)
 
-func (box *Box) Set(url string, short string, user string) {
+func (box *Box) Set(url string, short string, user string) error {
 
 	box.RLock()
 	defer box.RUnlock()
 
 	if isNew := fineDuplicate(box, short); isNew == false {
-		return
+		return errors.New("duplicate")
 	}
 
 	line := Line{
@@ -22,5 +25,6 @@ func (box *Box) Set(url string, short string, user string) {
 	if err != nil {
 		log.Println(err)
 	}
+	return nil
 
 }

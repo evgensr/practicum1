@@ -48,12 +48,12 @@ func Encrypted(msg []byte, key string) ([]byte, error) {
 		return nil, err
 	}
 
-	log.Println("nonce: ", nonce)
+	// log.Println("nonce: ", nonce)
 	dst := aesgcm.Seal(nil, nonce, msg, nil) // зашифровываем
 	// добавим вектор
 	buf, _ := hex.DecodeString(hex.EncodeToString(dst) + hex.EncodeToString(nonce))
 
-	log.Println("buf: ", buf)
+	// log.Println("buf: ", buf)
 
 	return buf, nil
 
@@ -61,7 +61,7 @@ func Encrypted(msg []byte, key string) ([]byte, error) {
 
 func Decrypted(msg []byte, key string) ([]byte, error) {
 
-	log.Println("msg: ", msg)
+	// log.Println("msg: ", msg)
 	password := sha256.Sum256([]byte(key))
 
 	aesblock, err := aes.NewCipher(password[:])
@@ -86,9 +86,9 @@ func Decrypted(msg []byte, key string) ([]byte, error) {
 
 	// создаём вектор инициализации
 	nonce := msg[len(msg)-aesgcm.NonceSize():]
-	log.Println("nonce: ", nonce)
+	// log.Println("nonce: ", nonce)
 	msgOriginal := msg[:len(msg)-aesgcm.NonceSize()]
-	log.Println(msgOriginal)
+	// log.Println(msgOriginal)
 	src2, err := aesgcm.Open(nil, nonce, msgOriginal, nil) // расшифровываем
 	if err != nil {
 		fmt.Printf("error: %v\n", err)

@@ -1,12 +1,14 @@
 package memory
 
-func (box *Box) Set(url string, short string, user string) {
+import "errors"
+
+func (box *Box) Set(url string, short string, user string) error {
 
 	box.RLock()
 	defer box.RUnlock()
 
 	if isNew := fineDuplicate(box, short); isNew == false {
-		return
+		return errors.New("duplicate")
 	}
 
 	line := Line{
@@ -16,5 +18,6 @@ func (box *Box) Set(url string, short string, user string) {
 	}
 
 	box.addItem(line)
+	return nil
 
 }

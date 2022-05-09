@@ -44,7 +44,13 @@ func (s *APIserver) HandlerSetURL() http.HandlerFunc {
 		// id пользователя
 		userID := fmt.Sprintf("%v", r.Context().Value(ctxKeyUser))
 		// записываем в хранилище ключ значение
-		s.store.Set(request.URL, hash, userID)
+		if err := s.store.Set(request.URL, hash, userID); err != nil {
+			// заголов ответа 409
+			w.WriteHeader(http.StatusConflict)
+		} else {
+			// заголов ответа 201
+			w.WriteHeader(http.StatusCreated)
+		}
 
 		// создаем переменную из структуры response
 		data := response{
@@ -55,9 +61,6 @@ func (s *APIserver) HandlerSetURL() http.HandlerFunc {
 
 		// заголов ответа json
 		w.Header().Set("Content-Type", "application/json")
-
-		// заголов ответа 201
-		w.WriteHeader(http.StatusCreated)
 
 		// пишем в http.ResponseWriter ответ json
 		json.NewEncoder(w).Encode(data)
