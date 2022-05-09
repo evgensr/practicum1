@@ -43,3 +43,14 @@ http -v --session=prac11 POST http://localhost:8080/api/shorten url='http://habr
 http -v  http://localhost:8080/e8c31fc8dfc6ab9feab44bdfe8b9e145
 http -v  http://localhost:8080/ping
 
+
+http -v  http://localhost:8080/114f277c99eac452f0b44b552a154b4d
+
+http -v  http://localhost:8080/e8c31fc8dfc6ab9feab44bdfe8b9e145
+
+
+http -v http://localhost:8080/e8c31fc8dfc6ab9feab44bdfe8b9e145 \
+     Accept: \
+     Accept-Encoding: \
+     Connection:
+
