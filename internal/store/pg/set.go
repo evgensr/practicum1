@@ -17,7 +17,13 @@ func (box *Box) Set(url string, short string, user string) error {
 	//log.Println("err: ", err)
 	//log.Println(id)
 
-	if strings.Contains(err.Error(), "duplicate") {
+	// log.Println(strings.Contains(err.Error(), "duplicate"))
+	duplicate := false
+	if err != nil {
+		duplicate = strings.Contains(err.Error(), "duplicate")
+	}
+
+	if duplicate {
 		return errors.New("duplicate")
 	}
 
