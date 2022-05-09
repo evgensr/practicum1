@@ -25,6 +25,7 @@ func (s *APIserver) GzipHandle(next http.Handler) http.Handler {
 		if !strings.Contains(r.Header.Get("Accept-Encoding"), "gzip") {
 			// если gzip не поддерживается, передаём управление
 			// дальше без изменений
+			s.logger.Info(r.Header.Get("Accept-Encoding"))
 			s.logger.Info("Not support gzip")
 			next.ServeHTTP(w, r)
 			return
@@ -39,6 +40,7 @@ func (s *APIserver) GzipHandle(next http.Handler) http.Handler {
 		defer gz.Close()
 
 		w.Header().Set("Content-Encoding", "gzip")
+		s.logger.Info(r.Header.Get("Accept-Encoding"))
 		s.logger.Info("Support gzip")
 		// передаём обработчику страницы переменную типа gzipWriter для вывода данных
 		next.ServeHTTP(gzipWriter{ResponseWriter: w, Writer: gz}, r)
