@@ -8,7 +8,7 @@ type Config struct {
 	FileStoragePath string `env:"FILE_STORAGE_PATH"`
 	LogLevel        string `env:"LOG_LEVEL" envDefault:"debug"`
 	SessionKey      string `env:"SESSION_KEY" envDefault:"SESSION_KEY"`
-	DatabaseDSN     string `env:"DATABASE_DSN,required" envDefault:"host=localhost user=postgres password=postgres dbname=restapi sslmode=disable"`
+	DatabaseDSN     string `env:"DATABASE_DSN"`
 }
 
 func NewConfig() Config {

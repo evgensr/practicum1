@@ -3,6 +3,7 @@ package app
 import (
 	"bytes"
 	"encoding/json"
+	"github.com/gorilla/sessions"
 	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
@@ -12,7 +13,12 @@ import (
 func TestApiServer_Handler(t *testing.T) {
 
 	conf := NewConfig()
-	s := New(&conf)
+	sessionStore := sessions.NewCookieStore([]byte(conf.SessionKey))
+
+	s := New(&conf, sessionStore)
+
+	// conf := NewConfig()
+	// s := New(&conf)
 	rec := httptest.NewRecorder()
 
 	jsonValue, _ := json.Marshal(map[string]string{"url": "https://habr8234.ru"})

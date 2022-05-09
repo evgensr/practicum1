@@ -36,10 +36,13 @@ func New(config *Config, sessionStore sessions.Store) *APIserver {
 	param := config.FileStoragePath
 	if len(config.DatabaseDSN) > 1 {
 		store = pg.New(config.DatabaseDSN)
+		log.Println("store pg")
 	} else if len(param) > 1 {
 		store = file.New(param)
+		log.Println("store file")
 	} else {
 		store = memory.New(param)
+		log.Println("store memory")
 	}
 
 	return &APIserver{
@@ -58,8 +61,10 @@ func (s *APIserver) Start() error {
 		return err
 	}
 
-	if err := s.CreateTable(); err != nil {
-		log.Fatal(err)
+	if len(s.config.DatabaseDSN) > 1 {
+		if err := s.CreateTable(); err != nil {
+			log.Fatal(err)
+		}
 	}
 
 	s.configureRouter()

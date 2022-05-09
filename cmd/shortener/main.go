@@ -9,6 +9,8 @@ import (
 	"os"
 )
 
+var version = "0.0.1"
+
 func main() {
 
 	conf := app.NewConfig()
@@ -21,10 +23,10 @@ func main() {
 		os.Exit(1)
 	}
 
-	flag.StringVar(&conf.ServerAddress, "a", os.Getenv("SERVER_ADDRESS"), "SERVER_ADDRESS")
-	flag.StringVar(&conf.BaseURL, "b", os.Getenv("BASE_URL"), "BASE_URL")
-	flag.StringVar(&conf.FileStoragePath, "f", os.Getenv("FILE_STORAGE_PATH"), "FILE_STORAGE_PATH")
-	flag.StringVar(&conf.DatabaseDSN, "d", os.Getenv("DATABASE_DSN"), "DATABASE_DSN")
+	flag.StringVar(&conf.ServerAddress, "a", conf.ServerAddress, "SERVER_ADDRESS")
+	flag.StringVar(&conf.BaseURL, "b", conf.BaseURL, "BASE_URL")
+	flag.StringVar(&conf.FileStoragePath, "f", conf.FileStoragePath, "FILE_STORAGE_PATH")
+	flag.StringVar(&conf.DatabaseDSN, "d", conf.DatabaseDSN, "DATABASE_DSN")
 
 	flag.Parse()
 
