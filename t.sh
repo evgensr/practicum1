@@ -23,7 +23,7 @@ http -v  http://localhost:8080/e8c31fc8dfc6ab9feab44bdfe8b9e145
 
 http -v --session=prac11  http://localhost:8080/api/user/urls
 
-
+curl -i -d "http://ya.ru" -X POST http://localhost:8080/
 
 
 curl -X POST http://localhost:8080/api/shorten/batch \
@@ -32,6 +32,9 @@ curl -X POST http://localhost:8080/api/shorten/batch \
 
 
 
+curl -v -i -X POST http://localhost:8080/api/shorten/batch \
+-H 'Content-Type: application/json' \
+-d '[{"correlation_id":"6e11db6c-a119-4e8d-99c4-1bb5f11304c5","original_url":"http://mqwidmfgdvt7xj.net/efsgtpmzlvk2tg"},{"correlation_id":"27ccbed1-97b3-4d4e-ab3f-b1599d06c073","original_url":"http://ivcetm.com"}]'
 
 
 
