@@ -17,10 +17,10 @@ curl -i http://localhost:8080/e2828d79249d0279acbb78e0ce8072ce
 curl -i http://localhost:8080/5792bb5d149a507c1ac10358fd67cccf
 
 
-http -v --session=prac11 POST http://localhost:8080/api/shorten url='http://habr.ru/'
+
 http -v  http://localhost:8080/e8c31fc8dfc6ab9feab44bdfe8b9e145
 
-
+http -v --session=prac11 POST http://localhost:8080/api/shorten url='http://habr.ru/'
 http -v --session=prac11  http://localhost:8080/api/user/urls
 
 curl -i -d "http://ya.ru" -X POST http://localhost:8080/
@@ -42,3 +42,4 @@ curl -v -i -X POST http://localhost:8080/api/shorten/batch \
 http -v --session=prac11 POST http://localhost:8080/api/shorten url='http://habr.ru/'
 http -v  http://localhost:8080/e8c31fc8dfc6ab9feab44bdfe8b9e145
 http -v  http://localhost:8080/ping
+

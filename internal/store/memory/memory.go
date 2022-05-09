@@ -54,12 +54,16 @@ func removeDuplicateElement(languages []string) []string {
 	return result
 }
 
+// fineDuplicate true если находим дубликат
 func fineDuplicate(items *Box, str string) bool {
 
+	if len(items.Items) == 0 {
+		return false
+	}
 	for _, item := range items.Items {
 		if item.Short == str {
-			return false
+			return true
 		}
 	}
-	return true
+	return false
 }
