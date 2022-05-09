@@ -27,7 +27,7 @@ type request struct {
 }
 
 type response struct {
-	URL string `json:"response" valid:"url"`
+	URL string `json:"result" valid:"url"`
 }
 
 type Line = line.Line

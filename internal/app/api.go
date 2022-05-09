@@ -32,7 +32,7 @@ type APIserver struct {
 func New(config *Config, sessionStore sessions.Store) *APIserver {
 	var store Storage
 	// sessionStore = sessions.NewCookieStore([]byte(config.SessionKey))
-
+	config.BaseURL = helper.AddSlash(config.BaseURL)
 	param := config.FileStoragePath
 	if len(config.DatabaseDSN) > 1 {
 		store = pg.New(config.DatabaseDSN)

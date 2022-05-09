@@ -107,3 +107,11 @@ func generateRandom(size int) ([]byte, error) {
 
 	return b, nil
 }
+
+func AddSlash(s string) string {
+	last := s[len(s)-1:]
+	if last != `/` {
+		s = s + `/`
+	}
+	return s
+}
