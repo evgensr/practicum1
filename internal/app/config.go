@@ -37,15 +37,3 @@ type Storage interface {
 	GetByUser(key string) []Line
 	Debug()
 }
-
-//// Url структура Mutex
-//type Url struct {
-//	ShortUrl    string `json:"short_url"`
-//	OriginalUrl string `json:"original_url"`
-//}
-//
-//type User struct {
-//	sync.RWMutex
-//	id  string
-//	url []Url
-//}

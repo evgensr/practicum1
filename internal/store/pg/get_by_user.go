@@ -7,7 +7,7 @@ import (
 // GetByUser получить url по id юзера
 func (box *Box) GetByUser(idUser string) (lines []Line) {
 	var line []Line
-	var originalUrl string
+	var originalURL string
 
 	log.Println(idUser)
 	rows, err := box.db.Query("SELECT original_url FROM  short  WHERE  user_id = $1",
@@ -19,19 +19,19 @@ func (box *Box) GetByUser(idUser string) (lines []Line) {
 	}
 
 	for rows.Next() {
-		err = rows.Scan(&originalUrl)
+		err = rows.Scan(&originalURL)
 		if err != nil {
 			log.Println("Scan ", err)
 		}
-		log.Println("original_url ", originalUrl)
+		log.Println("original_url ", originalURL)
 		line = append(line, Line{
-			Url: originalUrl,
+			URL: originalURL,
 		})
 
 	}
 
 	log.Println("err: ", err)
-	log.Println("lin: ", originalUrl)
+	log.Println("lin: ", originalURL)
 	return line
 
 }

@@ -42,9 +42,9 @@ func (s *APIserver) HandlerSetURL() http.HandlerFunc {
 		hash := helper.GetShort(request.URL)
 
 		// id пользователя
-		userId := fmt.Sprintf("%v", r.Context().Value(ctxKeyUser))
+		userID := fmt.Sprintf("%v", r.Context().Value(ctxKeyUser))
 		// записываем в хранилище ключ значение
-		s.store.Set(request.URL, hash, userId)
+		s.store.Set(request.URL, hash, userID)
 
 		// создаем переменную из структуры response
 		data := response{

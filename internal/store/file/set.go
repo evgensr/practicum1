@@ -12,7 +12,7 @@ func (box *Box) Set(url string, short string, user string) {
 	}
 
 	line := Line{
-		Url:   url,
+		URL:   url,
 		Short: short,
 		User:  user,
 	}

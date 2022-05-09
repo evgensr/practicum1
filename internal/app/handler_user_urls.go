@@ -19,12 +19,12 @@ func (s *APIserver) HandlerUserUrls() http.HandlerFunc {
 
 		var line []Line
 		// id пользователя
-		userId := fmt.Sprintf("%v", r.Context().Value(ctxKeyUser))
-		urls := s.store.GetByUser(userId)
+		userID := fmt.Sprintf("%v", r.Context().Value(ctxKeyUser))
+		urls := s.store.GetByUser(userID)
 		if len(urls) > 0 {
 			for _, url := range urls {
 				line = append(line, Line{
-					Url:   url.Url,
+					Url:   url.URL,
 					Short: s.config.BaseURL + url.Short,
 				})
 			}

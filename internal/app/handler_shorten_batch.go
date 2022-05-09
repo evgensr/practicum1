@@ -13,18 +13,18 @@ func (s *APIserver) HandlerShortenBatch() http.HandlerFunc {
 
 	type LineRequest struct {
 		CorrelationID string `json:"correlation_id"`
-		OriginalUrl   string `json:"original_url"`
+		originalURL   string `json:"original_url"`
 	}
 
 	type LineResponse struct {
 		CorrelationID string `json:"correlation_id"`
-		ShortUrl      string `json:"short_url"`
+		ShortURL      string `json:"short_url"`
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		// id пользователя
-		userId := fmt.Sprintf("%v", r.Context().Value(ctxKeyUser))
+		userID := fmt.Sprintf("%v", r.Context().Value(ctxKeyUser))
 
 		// создаем перменную
 		decoder := json.NewDecoder(r.Body)
@@ -46,14 +46,14 @@ func (s *APIserver) HandlerShortenBatch() http.HandlerFunc {
 
 		for _, line := range lineRequest {
 			// получаем short
-			hash := helper.GetShort(line.OriginalUrl)
+			hash := helper.GetShort(line.originalURL)
 			// записываем в хранилище ключ значение
-			s.store.Set(line.OriginalUrl, hash, userId)
+			s.store.Set(line.originalURL, hash, userID)
 			log.Println(line)
 
 			lineResponse = append(lineResponse, LineResponse{
 				CorrelationID: line.CorrelationID,
-				ShortUrl:      s.config.BaseURL + hash,
+				ShortURL:      s.config.BaseURL + hash,
 			})
 		}
 

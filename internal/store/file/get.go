@@ -7,7 +7,7 @@ func (box *Box) Get(key string) string {
 
 	for _, u := range box.Items {
 		if u.Short == key {
-			return u.Url
+			return u.URL
 		}
 	}
 	return ""

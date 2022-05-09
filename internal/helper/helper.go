@@ -19,10 +19,11 @@ func GetHash(text string) string {
 }
 
 func GetShort(text string) string {
+	// TODO: найти алгоритм который действительно будет предоставлять короткую ссылку
 	return GetHash(text)
 }
 
-func GeneratorUuid() string {
+func GeneratorUUID() string {
 	return uuid.New().String()
 }
 

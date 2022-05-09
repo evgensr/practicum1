@@ -111,7 +111,7 @@ func (s *APIserver) authenticateUser(next http.Handler) http.Handler {
 		c, err := r.Cookie(sessionName)
 		if err != nil {
 			expiration := time.Now().Add(365 * 24 * time.Hour)
-			id = helper.GeneratorUuid()
+			id = helper.GeneratorUUID()
 			encryptedCookie, err := helper.Encrypted([]byte(id), "123")
 			if err != nil {
 				return

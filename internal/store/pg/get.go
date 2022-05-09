@@ -4,13 +4,13 @@ import "log"
 
 func (box *Box) Get(key string) string {
 
-	var originalUrl string
+	var originalURL string
 	err := box.db.QueryRow("SELECT original_url FROM  short  WHERE  short_url = $1",
 		key,
-	).Scan(&originalUrl)
+	).Scan(&originalURL)
 
 	log.Println("err: ", err)
-	log.Println(originalUrl)
-	return originalUrl
+	log.Println(originalURL)
+	return originalURL
 
 }
