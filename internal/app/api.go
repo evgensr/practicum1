@@ -109,11 +109,13 @@ func (s *APIserver) authenticateUser(next http.Handler) http.Handler {
 
 		id := ""
 
+		log.Println("SessionKey:  ", s.config.SessionKey)
+
 		c, err := r.Cookie(sessionName)
 		if err != nil {
 			expiration := time.Now().Add(365 * 24 * time.Hour)
 			id = helper.GeneratorUUID()
-			encryptedCookie, err := helper.Encrypted([]byte(id), "123")
+			encryptedCookie, err := helper.Encrypted([]byte(id), s.config.SessionKey)
 			if err != nil {
 				return
 			}
@@ -125,7 +127,7 @@ func (s *APIserver) authenticateUser(next http.Handler) http.Handler {
 			if err != nil {
 				return
 			}
-			decryptedCookie, err := helper.Decrypted(decoded, "123")
+			decryptedCookie, err := helper.Decrypted(decoded, s.config.SessionKey)
 			if err != nil {
 				return
 			}

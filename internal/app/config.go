@@ -15,9 +15,11 @@ func NewConfig() Config {
 	return Config{}
 }
 
+type key int
+
 const (
-	sessionName = "practicum"
-	ctxKeyUser
+	sessionName     = "practicum"
+	ctxKeyUser  key = iota
 )
 
 type request struct {
