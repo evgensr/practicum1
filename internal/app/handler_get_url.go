@@ -1,7 +1,6 @@
 package app
 
 import (
-	"github.com/davecgh/go-spew/spew"
 	"github.com/gorilla/mux"
 	"net/http"
 )
@@ -12,8 +11,8 @@ func (s *APIserver) HandlerGetURL() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
-		spew.Dump(vars)
-		spew.Dump(r.Header)
+		// spew.Dump(vars)
+		// spew.Dump(r.Header)
 
 		if len(vars["hash"]) < 1 {
 			s.logger.Info("HandlerGetURL: vars hash is small ", vars["hash"])
