@@ -11,13 +11,15 @@ import (
 func (s *APIserver) HandlerUserUrls() http.HandlerFunc {
 
 	type Line struct {
-		URL   string `json:"original_url"`
 		Short string `json:"short_url"`
+		URL   string `json:"original_url"`
 	}
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		var line []Line
+		// заголов ответа json
+		w.Header().Set("Content-Type", "application/json")
 		// id пользователя
 		userID := fmt.Sprintf("%v", r.Context().Value(ctxKeyUser))
 		urls := s.store.GetByUser(userID)
