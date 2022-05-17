@@ -112,7 +112,7 @@ func (s *APIserver) configureRouter() {
 func (s *APIserver) authenticateUser(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
-		id := ""
+		var id string
 
 		log.Println("SessionKey:  ", s.config.SessionKey)
 
@@ -122,6 +122,7 @@ func (s *APIserver) authenticateUser(next http.Handler) http.Handler {
 			id = helper.GeneratorUUID()
 			encryptedCookie, err := helper.Encrypted([]byte(id), s.config.SessionKey)
 			if err != nil {
+				s.logger.Warning("error encrypted cookie ", err)
 				return
 			}
 			cookie := http.Cookie{Name: sessionName, Value: hex.EncodeToString(encryptedCookie), Expires: expiration}
@@ -130,7 +131,7 @@ func (s *APIserver) authenticateUser(next http.Handler) http.Handler {
 			fmt.Println("Cookie ", c.Value)
 			decoded, err := hex.DecodeString(c.Value)
 			if err != nil {
-
+				s.logger.Warning("error decode string Cookie ", c.Value)
 				return
 			}
 			decryptedCookie, err := helper.Decrypted(decoded, s.config.SessionKey)
@@ -140,6 +141,7 @@ func (s *APIserver) authenticateUser(next http.Handler) http.Handler {
 				id = helper.GeneratorUUID()
 				encryptedCookie, err := helper.Encrypted([]byte(id), s.config.SessionKey)
 				if err != nil {
+					s.logger.Warning("error encrypted cookie ", err)
 					return
 				}
 				cookie := http.Cookie{Name: sessionName, Value: hex.EncodeToString(encryptedCookie), Expires: expiration}

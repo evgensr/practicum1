@@ -27,8 +27,8 @@ func GeneratorUUID() string {
 	return uuid.New().String()
 }
 
+// Encrypted
 func Encrypted(msg []byte, key string) ([]byte, error) {
-
 	password := sha256.Sum256([]byte(key))
 	aesblock, err := aes.NewCipher(password[:])
 	if err != nil {
