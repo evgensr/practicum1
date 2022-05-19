@@ -63,13 +63,14 @@ func (s *APIserver) Start() error {
 
 	if len(s.config.DatabaseDSN) > 1 {
 		if err := s.CreateTable(); err != nil {
-			log.Fatal(err)
+			log.Fatal("create table ", err)
 		}
 	}
 
 	s.configureRouter()
 
 	if err := s.configureStore(); err != nil {
+		log.Println("configureStore ", err)
 		return err
 	}
 
@@ -156,31 +157,7 @@ func (s *APIserver) authenticateUser(next http.Handler) http.Handler {
 
 		log.Println("user id: ", id)
 
-		// next.ServeHTTP(w, r)
-
 		next.ServeHTTP(w, r.WithContext(context.WithValue(r.Context(), ctxKeyUser, id)))
-
-		// а можно упростить все на mux
-		// инициализация сессии
-		//session, err := s.sessionStore.Get(r, sessionName)
-		//if err != nil {
-		//	s.error(w, r, http.StatusInternalServerError, err)
-		//	return
-		//}
-		//
-		//id, ok := session.Values["user_id"]
-		//if !ok {
-		//	session.Values["user_id"] = helper.GeneratorUuid()
-		//	id = session.Values["user_id"]
-		//	if err := s.sessionStore.Save(r, w, session); err != nil {
-		//		s.error(w, r, http.StatusInternalServerError, err)
-		//		return
-		//	}
-		//}
-		//
-		//log.Println(id)
-		//
-		//next.ServeHTTP(w, r)
 
 	})
 
@@ -206,11 +183,11 @@ func (s *APIserver) CreateTable() error {
 	log.Println("config Database: ", s.config.DatabaseDSN)
 	db, err := sql.Open("postgres", s.config.DatabaseDSN)
 	if err != nil {
-		log.Println(err)
+		log.Println("create table func ", err)
 		return err
 	}
 	if err := db.Ping(); err != nil {
-		log.Println(err)
+		log.Println("ping err ", err)
 		return err
 	}
 

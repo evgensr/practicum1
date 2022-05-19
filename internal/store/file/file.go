@@ -64,7 +64,7 @@ func New(param string) *Box {
 		// в структуру row разбиаем json
 		err := json.Unmarshal(fileScanner.Bytes(), &line)
 		if err != nil {
-			log.Println(err)
+			log.Println("err unmarshal ", err)
 		}
 		// заполняем box
 		box.addItem(line)

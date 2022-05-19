@@ -8,9 +8,8 @@ import (
 
 func TestFineDuplicate(t *testing.T) {
 	var items Box
-	var line []Line
 
-	line = []Line{
+	line := []Line{
 
 		{
 			User:  helper.GeneratorUUID(),
