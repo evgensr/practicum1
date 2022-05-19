@@ -106,7 +106,7 @@ func (s *APIserver) configureRouter() {
 	s.router.HandleFunc("/", s.HandlerSetURLSimply()).Methods("POST")
 	s.router.HandleFunc("/api/shorten", s.HandlerSetURL()).Methods("POST")
 	s.router.HandleFunc("/api/shorten/batch", s.HandlerShortenBatch()).Methods("POST")
-	// s.router.Use(s.GzipHandle)
+	s.router.Use(s.Gzip)
 
 }
 
