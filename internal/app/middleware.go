@@ -4,6 +4,7 @@ import (
 	"compress/gzip"
 	_ "github.com/lib/pq" // ...
 	"io"
+	"log"
 	"net/http"
 	"strings"
 )
@@ -34,6 +35,7 @@ func (s *APIserver) GzipHandle(next http.Handler) http.Handler {
 		// создаём gzip.Writer поверх текущего w
 		gz, err := gzip.NewWriterLevel(w, gzip.BestSpeed)
 		if err != nil {
+			log.Println(err)
 			io.WriteString(w, err.Error())
 			return
 		}
