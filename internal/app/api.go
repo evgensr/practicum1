@@ -99,6 +99,7 @@ func (s *APIserver) configureLogger() error {
 
 func (s *APIserver) configureRouter() {
 
+	s.router.Use(s.GzipHandle)
 	s.router.Use(s.authenticateUser)
 	s.router.HandleFunc("/ping", s.HandlerPing())
 	s.router.HandleFunc("/api/user/urls", s.HandlerUserUrls())
@@ -106,7 +107,6 @@ func (s *APIserver) configureRouter() {
 	s.router.HandleFunc("/", s.HandlerSetURLSimply()).Methods("POST")
 	s.router.HandleFunc("/api/shorten", s.HandlerSetURL()).Methods("POST")
 	s.router.HandleFunc("/api/shorten/batch", s.HandlerShortenBatch()).Methods("POST")
-	s.router.Use(s.GzipHandle)
 
 }
 
