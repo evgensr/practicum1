@@ -113,6 +113,8 @@ func (s *APIserver) authenticateUser(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		var id string
+		log.Println("Header: ", r.Header)
+		log.Println("Body: ", r.Body)
 
 		log.Println("SessionKey:  ", s.config.SessionKey)
 

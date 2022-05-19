@@ -1,7 +1,7 @@
 package memory
 
 import (
-	"github.com/evgensr/practicum1/internal/line"
+	"github.com/evgensr/practicum1/internal/store"
 	"sync"
 )
 
@@ -10,7 +10,8 @@ type Box struct {
 	Items           []Line
 	fileStoragePath string
 }
-type Line = line.Line
+
+type Line = store.Line
 
 // RWMap структура Mutex
 type RWMap struct {

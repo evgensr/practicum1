@@ -4,7 +4,7 @@ import (
 	"bufio"
 	"encoding/json"
 	"github.com/davecgh/go-spew/spew"
-	"github.com/evgensr/practicum1/internal/line"
+	"github.com/evgensr/practicum1/internal/store"
 	"log"
 	"os"
 	"sync"
@@ -16,7 +16,7 @@ type Box struct {
 	fileStoragePath string
 }
 
-type Line = line.Line
+type Line = store.Line
 
 // RWMap структура Mutex
 type RWMap struct {

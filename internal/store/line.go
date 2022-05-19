@@ -1,4 +1,4 @@
-package line
+package store
 
 type Line struct {
 	User   string `json:"user,omitempty"`
