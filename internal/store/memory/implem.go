@@ -6,17 +6,17 @@ import (
 	"log"
 )
 
-func (box *Box) Get(key string) string {
+func (box *Box) Get(key string) (Line, error) {
 
 	box.RLock()
 	defer box.RUnlock()
 
 	for _, u := range box.Items {
 		if u.Short == key {
-			return u.URL
+			return u, nil
 		}
 	}
-	return ""
+	return Line{}, errors.New("not found")
 }
 
 // GetByUser получить url по id юзера
@@ -38,26 +38,38 @@ func (box *Box) GetByUser(idUser string) (lines []Line) {
 	return line
 }
 
-func (box *Box) Set(url string, short string, user string) error {
+func (box *Box) Set(line Line) error {
 
 	box.RLock()
 	defer box.RUnlock()
 
-	if isDuplicate := fineDuplicate(box, short); isDuplicate {
+	if isDuplicate := fineDuplicate(box, line.Short); isDuplicate {
 		return errors.New("duplicate")
 	}
 
-	line := Line{
-		URL:   url,
-		Short: short,
-		User:  user,
+	newLine := Line{
+		URL:           line.URL,
+		Short:         line.Short,
+		User:          line.User,
+		CorrelationId: line.CorrelationId,
+		Status:        line.Status,
 	}
 
-	box.addItem(line)
+	box.addItem(newLine)
 	return nil
 
 }
 
-func (box *Box) Delete(key string) error {
+func (box *Box) Delete(line []Line) error {
+	box.RLock()
+	defer box.RUnlock()
+
+	for ui, u := range box.Items {
+		for _, l := range line {
+			if u.User == l.User && u.Short == l.Short {
+				box.Items[ui].Status = 1
+			}
+		}
+	}
 	return nil
 }

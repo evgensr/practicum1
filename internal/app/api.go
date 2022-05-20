@@ -101,13 +101,14 @@ func (s *APIserver) configureRouter() {
 
 	s.router.Use(s.authenticateUser)
 	s.router.HandleFunc("/ping", s.HandlerPing())
-	s.router.HandleFunc("/api/user/urls", s.HandlerUserUrls())
-	s.router.HandleFunc("/{hash}", s.HandlerGetURL())
-	s.router.HandleFunc("/", s.HandlerSetURLSimply()).Methods("POST")
-	s.router.HandleFunc("/api/shorten", s.HandlerSetURL()).Methods("POST")
-	s.router.HandleFunc("/api/shorten/batch", s.HandlerShortenBatch()).Methods("POST")
+	s.router.HandleFunc("/api/user/urls", s.HandlerUserUrls()).Methods(http.MethodPost)
+	s.router.HandleFunc("/{hash}", s.HandlerGetURL()).Methods(http.MethodGet)
+	s.router.HandleFunc("/", s.HandlerSetURLSimply()).Methods(http.MethodPost)
+	s.router.HandleFunc("/api/shorten", s.HandlerSetURL()).Methods(http.MethodPost)
+	s.router.HandleFunc("/api/shorten/batch", s.HandlerShortenBatch()).Methods(http.MethodPost)
+	s.router.HandleFunc("/api/user/urls", s.HandlerDeleteURL()).Methods(http.MethodDelete)
 	s.router.Use(s.Gzip)
-	s.router.Use(s.Log)
+	// s.router.Use(s.Log)
 
 }
 
@@ -115,8 +116,8 @@ func (s *APIserver) authenticateUser(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		var id string
-		log.Println("Header: ", r.Header)
-		log.Println("Body: ", r.Body)
+		// log.Println("Header: ", r.Header)
+		// log.Println("Body: ", r.Body)
 
 		log.Println("SessionKey:  ", s.config.SessionKey)
 
@@ -197,6 +198,7 @@ func (s *APIserver) CreateTable() error {
 		"original_url varchar(4096) not null," +
 		"short_url varchar(32) UNIQUE not null," +
 		"user_id varchar(36) not null," +
+		"correlation_id varchar(36) null," +
 		"status smallint not null DEFAULT 0);"); err != nil {
 		return errors.New("error sql ")
 	}

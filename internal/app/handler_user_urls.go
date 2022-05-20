@@ -3,6 +3,7 @@ package app
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/evgensr/practicum1/internal/store"
 	"log"
 	"net/http"
 )
@@ -18,13 +19,14 @@ func (s *APIserver) HandlerUserUrls() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		var line []Line
+		var bLine []store.Line
 		// заголов ответа json
 		w.Header().Set("Content-Type", "application/json")
 		// id пользователя
 		userID := fmt.Sprintf("%v", r.Context().Value(ctxKeyUser))
-		urls := s.store.GetByUser(userID)
-		if len(urls) > 0 {
-			for _, url := range urls {
+		bLine = s.store.GetByUser(userID)
+		if len(bLine) > 0 {
+			for _, url := range bLine {
 				line = append(line, Line{
 					URL:   url.URL,
 					Short: s.config.BaseURL + url.Short,

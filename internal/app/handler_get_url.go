@@ -2,6 +2,7 @@ package app
 
 import (
 	"github.com/gorilla/mux"
+	"log"
 	"net/http"
 )
 
@@ -20,15 +21,20 @@ func (s *APIserver) HandlerGetURL() http.HandlerFunc {
 			return
 		}
 
-		url := s.store.Get(vars["hash"])
+		url, err := s.store.Get(vars["hash"])
+		if err != nil {
+			log.Println(err)
+		}
 
 		// s.store.Debug()
 
-		if len(url) > 0 {
+		if len(url.Short) > 0 && url.Status != 1 {
 			s.logger.Info("HandlerGetURL: result ", vars["hash"])
-			w.Header().Set("Location", url)
+			w.Header().Set("Location", url.Short)
 			w.WriteHeader(307)
 			// w.Write(nil)
+		} else if url.Status == 1 {
+			w.WriteHeader(http.StatusGone)
 		} else {
 			s.logger.Info("HandlerGetURL: not found ", vars["hash"])
 			w.WriteHeader(400)

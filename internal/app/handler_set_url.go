@@ -47,7 +47,11 @@ func (s *APIserver) HandlerSetURL() http.HandlerFunc {
 		// id пользователя
 		userID := fmt.Sprintf("%v", r.Context().Value(ctxKeyUser))
 		// записываем в хранилище ключ значение
-		if err := s.store.Set(request.URL, hash, userID); err != nil {
+		if err := s.store.Set(Line{
+			URL:   request.URL,
+			User:  userID,
+			Short: hash,
+		}); err != nil {
 			// заголов ответа 409
 			w.WriteHeader(http.StatusConflict)
 		} else {

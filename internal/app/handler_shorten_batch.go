@@ -48,7 +48,12 @@ func (s *APIserver) HandlerShortenBatch() http.HandlerFunc {
 			// получаем short
 			hash := helper.GetShort(line.OriginalURL)
 			// записываем в хранилище ключ значение
-			s.store.Set(line.OriginalURL, hash, userID)
+			s.store.Set(Line{
+				URL:           line.OriginalURL,
+				Short:         hash,
+				User:          userID,
+				CorrelationId: line.CorrelationID,
+			})
 			log.Println(line)
 
 			lineResponse = append(lineResponse, LineResponse{

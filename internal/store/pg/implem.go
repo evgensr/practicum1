@@ -6,58 +6,59 @@ import (
 	"strings"
 )
 
-func (box *Box) Get(key string) string {
+func (box *Box) Get(key string) (Line, error) {
 
-	var originalURL string
-	err := box.db.QueryRow("SELECT original_url FROM  short  WHERE  short_url = $1",
+	var line Line
+	err := box.db.QueryRow("SELECT original_url, short_url, user_id, correlation_id, status FROM  short  WHERE  short_url = $1",
 		key,
-	).Scan(&originalURL)
+	).Scan(&line.URL, &line.Short, &line.User, &line.CorrelationId, &line.Status)
 
 	log.Println("err: ", err)
-	log.Println(originalURL)
-	return originalURL
+	log.Println(line)
+	return line, err
 
 }
 
 // GetByUser получить url по id юзера
 func (box *Box) GetByUser(idUser string) (lines []Line) {
 	var line []Line
-	var originalURL string
+	var bLine Line
 
 	log.Println(idUser)
-	rows, err := box.db.Query("SELECT original_url FROM  short  WHERE  user_id = $1",
+	rows, err := box.db.Query("SELECT original_url, short_url, user_id, correlation_id, status FROM  short  WHERE  user_id = $1",
 		idUser,
 	)
+	// обязательно закрываем перед возвратом функции
+	defer rows.Close()
 
 	if err != nil {
 		log.Println("err ** ", err)
 	}
 
 	for rows.Next() {
-		err = rows.Scan(&originalURL)
+		err = rows.Scan(&bLine.URL, &bLine.Short, &bLine.User, &bLine.CorrelationId, &bLine.Status)
 		if err != nil {
 			log.Println("Scan ", err)
 		}
-		log.Println("original_url ", originalURL)
-		line = append(line, Line{
-			URL: originalURL,
-		})
+		log.Println("original_url ", bLine)
+		line = append(line, bLine)
 
 	}
 
 	log.Println("err: ", err)
-	log.Println("lin: ", originalURL)
+	log.Println("lin: ", bLine)
 	return line
 
 }
 
-func (box *Box) Set(url string, short string, user string) error {
+func (box *Box) Set(line Line) error {
 
 	var id int64
-	err := box.db.QueryRow("INSERT INTO short (original_url, short_url, user_id) VALUES ($1, $2, $3) RETURNING id",
-		url,
-		short,
-		user,
+	err := box.db.QueryRow("INSERT INTO short (original_url, short_url, user_id, correlation_id) VALUES ($1, $2, $3, $4) RETURNING id",
+		line.URL,
+		line.Short,
+		line.User,
+		line.CorrelationId,
 	).Scan(&id)
 
 	//log.Println("err: ", err)
@@ -76,6 +77,16 @@ func (box *Box) Set(url string, short string, user string) error {
 	return nil
 }
 
-func (box *Box) Delete(key string) error {
+func (box *Box) Delete(line []Line) error {
+	log.Println(line)
+
+	for _, row := range line {
+		sqlStatement := `UPDATE short SET status = 1 WHERE short_url = $1 and user_id = $2;`
+		_, err := box.db.Exec(sqlStatement, row.Short, row.User)
+		if err != nil {
+			log.Println(err)
+		}
+	}
+
 	return nil
 }

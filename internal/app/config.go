@@ -35,8 +35,8 @@ type response struct {
 type Line = store.Line
 
 type Storage interface {
-	Get(key string) string
-	Set(url string, short string, user string) error
-	Delete(key string) error
+	Get(key string) (Line, error)
+	Set(Line) error
+	Delete([]Line) error
 	GetByUser(key string) []Line
 }

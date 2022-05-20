@@ -26,7 +26,11 @@ func (s *APIserver) HandlerSetURLSimply() http.HandlerFunc {
 		// id пользователя
 		userID := fmt.Sprintf("%v", r.Context().Value(ctxKeyUser))
 		// записываем в хранилище ключ значение
-		if err := s.store.Set(string(b), hash, userID); err != nil {
+		if err := s.store.Set(Line{
+			URL:   string(b),
+			Short: hash,
+			User:  userID,
+		}); err != nil {
 			// заголов ответа 409
 			w.WriteHeader(http.StatusConflict)
 		} else {
