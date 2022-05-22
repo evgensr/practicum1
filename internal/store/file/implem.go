@@ -48,7 +48,7 @@ func (box *Box) Set(line Line) error {
 		URL:           line.URL,
 		Short:         line.Short,
 		User:          line.User,
-		CorrelationId: line.CorrelationId,
+		CorrelationID: line.CorrelationID,
 		Status:        line.Status,
 	}
 

@@ -52,7 +52,7 @@ func (s *APIserver) HandlerShortenBatch() http.HandlerFunc {
 				URL:           line.OriginalURL,
 				Short:         hash,
 				User:          userID,
-				CorrelationId: line.CorrelationID,
+				CorrelationID: line.CorrelationID,
 			})
 			log.Println(line)
 

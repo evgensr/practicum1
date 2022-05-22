@@ -101,7 +101,7 @@ func (s *APIserver) configureRouter() {
 
 	s.router.Use(s.authenticateUser)
 	s.router.HandleFunc("/ping", s.HandlerPing())
-	s.router.HandleFunc("/api/user/urls", s.HandlerUserUrls()).Methods(http.MethodPost)
+	s.router.HandleFunc("/api/user/urls", s.HandlerUserUrls()).Methods(http.MethodGet)
 	s.router.HandleFunc("/{hash}", s.HandlerGetURL()).Methods(http.MethodGet)
 	s.router.HandleFunc("/", s.HandlerSetURLSimply()).Methods(http.MethodPost)
 	s.router.HandleFunc("/api/shorten", s.HandlerSetURL()).Methods(http.MethodPost)

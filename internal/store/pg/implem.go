@@ -11,7 +11,7 @@ func (box *Box) Get(key string) (Line, error) {
 	var line Line
 	err := box.db.QueryRow("SELECT original_url, short_url, user_id, correlation_id, status FROM  short  WHERE  short_url = $1",
 		key,
-	).Scan(&line.URL, &line.Short, &line.User, &line.CorrelationId, &line.Status)
+	).Scan(&line.URL, &line.Short, &line.User, &line.CorrelationID, &line.Status)
 
 	log.Println("err: ", err)
 	log.Println(line)
@@ -29,14 +29,19 @@ func (box *Box) GetByUser(idUser string) (lines []Line) {
 		idUser,
 	)
 	// обязательно закрываем перед возвратом функции
-	defer rows.Close()
+	defer func() {
+		errClose := rows.Close()
+		if errClose != nil {
+			log.Println(errClose)
+		}
+	}()
 
 	if err != nil {
 		log.Println("err ** ", err)
 	}
 
 	for rows.Next() {
-		err = rows.Scan(&bLine.URL, &bLine.Short, &bLine.User, &bLine.CorrelationId, &bLine.Status)
+		err = rows.Scan(&bLine.URL, &bLine.Short, &bLine.User, &bLine.CorrelationID, &bLine.Status)
 		if err != nil {
 			log.Println("Scan ", err)
 		}
@@ -58,7 +63,7 @@ func (box *Box) Set(line Line) error {
 		line.URL,
 		line.Short,
 		line.User,
-		line.CorrelationId,
+		line.CorrelationID,
 	).Scan(&id)
 
 	//log.Println("err: ", err)
