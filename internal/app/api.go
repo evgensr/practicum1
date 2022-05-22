@@ -107,7 +107,8 @@ func (s *APIserver) configureRouter() {
 	s.router.HandleFunc("/api/shorten", s.HandlerSetURL()).Methods(http.MethodPost)
 	s.router.HandleFunc("/api/shorten/batch", s.HandlerShortenBatch()).Methods(http.MethodPost)
 	s.router.HandleFunc("/api/user/urls", s.HandlerDeleteURL()).Methods(http.MethodDelete)
-	s.router.Use(s.Gzip)
+	s.router.Use(s.GzipHandleEncode)
+	s.router.Use(s.GzipHandleDecode)
 	// s.router.Use(s.Log)
 
 }
@@ -116,8 +117,6 @@ func (s *APIserver) authenticateUser(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
 		var id string
-		// log.Println("Header: ", r.Header)
-		// log.Println("Body: ", r.Body)
 
 		log.Println("SessionKey:  ", s.config.SessionKey)
 
