@@ -30,7 +30,7 @@ func (s *APIserver) HandlerGetURL() http.HandlerFunc {
 
 		if len(url.Short) > 0 && url.Status != 1 {
 			s.logger.Info("HandlerGetURL: result ", vars["hash"])
-			w.Header().Set("Location", url.Short)
+			w.Header().Set("Location", url.URL)
 			w.WriteHeader(307)
 			// w.Write(nil)
 		} else if url.Status == 1 {
