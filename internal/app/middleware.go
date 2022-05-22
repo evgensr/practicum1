@@ -54,7 +54,7 @@ func (s *APIserver) GzipHandleDecode(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// проверяем, что клиент поддерживает gzip-сжатие
 		if !strings.Contains(r.Header.Get("Content-Encoding"), "gzip") {
-
+			next.ServeHTTP(w, r)
 			return
 		}
 
@@ -65,7 +65,7 @@ func (s *APIserver) GzipHandleDecode(next http.Handler) http.Handler {
 			return
 		}
 		r.Body = reader
-
+		next.ServeHTTP(w, r)
 	})
 }
 
