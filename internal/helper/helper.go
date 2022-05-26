@@ -74,9 +74,7 @@ func Decrypted(msg []byte, key string) ([]byte, error) {
 
 	// создаём вектор инициализации
 	nonce := msg[len(msg)-aesgcm.NonceSize():]
-	// log.Println("nonce: ", nonce)
 	msgOriginal := msg[:len(msg)-aesgcm.NonceSize()]
-	// log.Println(msgOriginal)
 	src2, err := aesgcm.Open(nil, nonce, msgOriginal, nil) // расшифровываем
 	if err != nil {
 		fmt.Printf("error: %v\n", err)

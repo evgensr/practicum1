@@ -69,14 +69,6 @@ func (s *APIserver) Start() error {
 
 	s.configureRouter()
 
-	if err := s.configureStore(); err != nil {
-		log.Println("configureStore ", err)
-		return err
-	}
-
-	//args := os.Args
-	//fmt.Printf("All arguments: %v\n", args)
-
 	s.logger.Info("SERVER_ADDRESS ", s.config.ServerAddress)
 	s.logger.Info("BASE_URL ", s.config.BaseURL)
 	s.logger.Info("FILE_STORAGE_PATH ", s.config.FileStoragePath)
@@ -162,10 +154,6 @@ func (s *APIserver) authenticateUser(next http.Handler) http.Handler {
 
 	})
 
-}
-
-func (s *APIserver) configureStore() error {
-	return nil
 }
 
 func (s *APIserver) error(w http.ResponseWriter, r *http.Request, code int, err error) {
