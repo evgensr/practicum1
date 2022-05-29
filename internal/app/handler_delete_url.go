@@ -18,7 +18,7 @@ func (s *APIserver) HandlerDeleteURL() http.HandlerFunc {
 
 		// объявляем переменную запроса
 		var lineRequest []string
-		var line []Line
+		// var line []Line
 		// id пользователя
 		userID := fmt.Sprintf("%v", r.Context().Value(ctxKeyUser))
 
@@ -33,13 +33,19 @@ func (s *APIserver) HandlerDeleteURL() http.HandlerFunc {
 		}
 
 		for _, row := range lineRequest {
-			line = append(line, Line{
-				Short: row,
-				User:  userID,
+
+			//line = append(line, Line{
+			//	Short: row,
+			//	User:  userID,
+			//})
+
+			go s.store.Delete([]Line{
+				{
+					Short: row,
+					User:  userID,
+				},
 			})
 		}
-
-		s.store.Delete(line)
 
 		w.WriteHeader(http.StatusAccepted)
 
