@@ -33,12 +33,6 @@ func (s *APIserver) HandlerDeleteURL() http.HandlerFunc {
 		}
 
 		for _, row := range lineRequest {
-
-			//line = append(line, Line{
-			//	Short: row,
-			//	User:  userID,
-			//})
-
 			go s.store.Delete([]Line{
 				{
 					Short: row,

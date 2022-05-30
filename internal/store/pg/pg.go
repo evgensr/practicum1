@@ -2,6 +2,7 @@ package pg
 
 import (
 	"database/sql"
+	"fmt"
 	"github.com/evgensr/practicum1/internal/store"
 	"log"
 	"sync"
@@ -12,6 +13,7 @@ type Box struct {
 	Items           []Line
 	fileStoragePath string
 	db              *sql.DB
+	chTaskDeleteUrl chan []Line
 }
 
 type Line = store.Line
@@ -31,8 +33,11 @@ func New(param string) *Box {
 	// defer db.Close()
 
 	box = &Box{
-		db: db,
+		db:              db,
+		chTaskDeleteUrl: make(chan []Line),
 	}
+
+	go box.taskDelUrl(box.chTaskDeleteUrl)
 
 	return box
 
@@ -48,4 +53,19 @@ func newDB(databaseURL string) (*sql.DB, error) {
 	}
 	return db, err
 
+}
+
+func (box *Box) taskDelUrl(ch chan []Line) {
+	for x := range ch {
+		fmt.Println("reader ", x)
+
+		for _, row := range x {
+			sqlStatement := `UPDATE short SET status = 1 WHERE short_url = $1 and user_id = $2;`
+			_, err := box.db.Exec(sqlStatement, row.Short, row.User)
+			if err != nil {
+				log.Println(err)
+			}
+		}
+
+	}
 }

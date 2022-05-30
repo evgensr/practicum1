@@ -84,14 +84,6 @@ func (box *Box) Set(line Line) error {
 
 func (box *Box) Delete(line []Line) error {
 	log.Println(line)
-
-	for _, row := range line {
-		sqlStatement := `UPDATE short SET status = 1 WHERE short_url = $1 and user_id = $2;`
-		_, err := box.db.Exec(sqlStatement, row.Short, row.User)
-		if err != nil {
-			log.Println(err)
-		}
-	}
-
+	box.chTaskDeleteUrl <- line
 	return nil
 }
