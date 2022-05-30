@@ -36,7 +36,7 @@ func New(param string) *Box {
 		chTaskDeleteURL: make(chan []Line),
 	}
 
-	go box.taskDelUrl(box.chTaskDeleteURL)
+	go box.taskDelURL(box.chTaskDeleteURL)
 
 	return box
 
@@ -54,7 +54,7 @@ func newDB(databaseURL string) (*sql.DB, error) {
 
 }
 
-func (box *Box) taskDelUrl(ch chan []Line) {
+func (box *Box) taskDelURL(ch chan []Line) {
 	for x := range ch {
 		log.Println("reader ", x)
 
