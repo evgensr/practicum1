@@ -2,7 +2,6 @@ package pg
 
 import (
 	"database/sql"
-	"fmt"
 	"github.com/evgensr/practicum1/internal/store"
 	"log"
 	"sync"
@@ -57,7 +56,7 @@ func newDB(databaseURL string) (*sql.DB, error) {
 
 func (box *Box) taskDelUrl(ch chan []Line) {
 	for x := range ch {
-		fmt.Println("reader ", x)
+		log.Println("reader ", x)
 
 		for _, row := range x {
 			sqlStatement := `UPDATE short SET status = 1 WHERE short_url = $1 and user_id = $2;`
