@@ -84,6 +84,6 @@ func (box *Box) Set(line Line) error {
 
 func (box *Box) Delete(line []Line) error {
 	log.Println(line)
-	box.chTaskDeleteUrl <- line
+	box.chTaskDeleteURL <- line
 	return nil
 }

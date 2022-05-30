@@ -12,7 +12,7 @@ type Box struct {
 	Items           []Line
 	fileStoragePath string
 	db              *sql.DB
-	chTaskDeleteUrl chan []Line
+	chTaskDeleteURL chan []Line
 }
 
 type Line = store.Line
@@ -33,10 +33,10 @@ func New(param string) *Box {
 
 	box = &Box{
 		db:              db,
-		chTaskDeleteUrl: make(chan []Line),
+		chTaskDeleteURL: make(chan []Line),
 	}
 
-	go box.taskDelUrl(box.chTaskDeleteUrl)
+	go box.taskDelUrl(box.chTaskDeleteURL)
 
 	return box
 
