@@ -2,7 +2,6 @@ package file
 
 import (
 	"errors"
-	"github.com/davecgh/go-spew/spew"
 	"log"
 )
 
@@ -31,7 +30,7 @@ func (box *Box) GetByUser(idUser string) (lines []Line) {
 			line = append(line, u)
 		}
 	}
-	spew.Dump(line)
+	// spew.Dump(line)
 	return line
 }
 

@@ -56,7 +56,7 @@ func newDB(databaseURL string) (*sql.DB, error) {
 
 func (box *Box) taskDelURL(ch chan []Line) {
 	for x := range ch {
-		log.Println("reader ", x)
+		// log.Println("reader ", x)
 
 		for _, row := range x {
 			sqlStatement := `UPDATE short SET status = 1 WHERE short_url = $1 and user_id = $2;`

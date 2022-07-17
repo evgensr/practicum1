@@ -3,7 +3,6 @@ package file
 import (
 	"bufio"
 	"encoding/json"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/evgensr/practicum1/internal/store"
 	"log"
 	"os"
@@ -69,7 +68,7 @@ func New(param string) *Box {
 		// заполняем box
 		box.addItem(line)
 	}
-	spew.Dump(box)
+	// spew.Dump(box)
 
 	return box
 

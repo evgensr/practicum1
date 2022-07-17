@@ -42,7 +42,7 @@ func Encrypted(msg []byte, key string) ([]byte, error) {
 		return nil, err
 	}
 	// создаём вектор инициализации
-	nonce, err := generateRandom(aesgcm.NonceSize())
+	nonce, err := GenerateRandom(aesgcm.NonceSize())
 	if err != nil {
 		log.Printf("error: %v\n", err)
 		return nil, err
@@ -84,7 +84,7 @@ func Decrypted(msg []byte, key string) ([]byte, error) {
 	return src2, nil
 }
 
-func generateRandom(size int) ([]byte, error) {
+func GenerateRandom(size int) ([]byte, error) {
 	b := make([]byte, size)
 	_, err := rand.Read(b)
 	if err != nil {

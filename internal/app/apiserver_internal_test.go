@@ -17,8 +17,6 @@ func TestApiServer_Handler(t *testing.T) {
 
 	s := New(&conf, sessionStore)
 
-	// conf := NewConfig()
-	// s := New(&conf)
 	rec := httptest.NewRecorder()
 
 	jsonValue, _ := json.Marshal(map[string]string{"url": "https://habr8234.ru"})

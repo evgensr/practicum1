@@ -2,8 +2,6 @@ package memory
 
 import (
 	"errors"
-	"github.com/davecgh/go-spew/spew"
-	"log"
 )
 
 func (box *Box) Get(key string) (Line, error) {
@@ -25,8 +23,8 @@ func (box *Box) GetByUser(idUser string) (lines []Line) {
 	box.RLock()
 	defer box.RUnlock()
 
-	log.Println("idUser ", idUser)
-	spew.Dump(box.Items)
+	// log.Println("idUser ", idUser)
+	// spew.Dump(box.Items)
 
 	var line []Line
 	for _, u := range box.Items {
@@ -34,7 +32,7 @@ func (box *Box) GetByUser(idUser string) (lines []Line) {
 			line = append(line, u)
 		}
 	}
-	spew.Dump(line)
+	// spew.Dump(line)
 	return line
 }
 

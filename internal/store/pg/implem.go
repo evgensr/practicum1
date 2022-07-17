@@ -13,8 +13,8 @@ func (box *Box) Get(key string) (Line, error) {
 		key,
 	).Scan(&line.URL, &line.Short, &line.User, &line.CorrelationID, &line.Status)
 
-	log.Println("err: ", err)
-	log.Println(line)
+	// log.Println("err: ", err)
+	// log.Println(line)
 	return line, err
 
 }
@@ -24,7 +24,7 @@ func (box *Box) GetByUser(idUser string) (lines []Line) {
 	var line []Line
 	var bLine Line
 
-	log.Println(idUser)
+	// log.Println(idUser)
 	rows, err := box.db.Query("SELECT original_url, short_url, user_id, correlation_id, status FROM  short  WHERE  user_id = $1",
 		idUser,
 	)
@@ -45,13 +45,13 @@ func (box *Box) GetByUser(idUser string) (lines []Line) {
 		if err != nil {
 			log.Println("Scan ", err)
 		}
-		log.Println("original_url ", bLine)
+		// log.Println("original_url ", bLine)
 		line = append(line, bLine)
 
 	}
 
-	log.Println("err: ", err)
-	log.Println("lin: ", bLine)
+	// log.Println("err: ", err)
+	// log.Println("lin: ", bLine)
 	return line
 
 }
@@ -83,7 +83,7 @@ func (box *Box) Set(line Line) error {
 }
 
 func (box *Box) Delete(line []Line) error {
-	log.Println(line)
+	// log.Println(line)
 	box.chTaskDeleteURL <- line
 	return nil
 }
