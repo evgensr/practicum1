@@ -39,7 +39,70 @@ func (s *PgRepositoryTestSuite) TearDownSuite() {
 	require.NoError(s.T(), err)
 }
 
-func (s *PgRepositoryTestSuite) TestSave() {
+func (s *PgRepositoryTestSuite) TestGet() {
+	rand.Seed(time.Now().UnixNano())
+	URL := "https://test" + helper.GeneratorUUID() + ".com"
+	short := helper.GetHash(URL)
+	line := Line{
+		User:          helper.GeneratorUUID(),
+		URL:           URL,
+		Short:         short,
+		CorrelationID: "1" + fmt.Sprint(rand.Intn(100000)),
+		Status:        0,
+	}
+	err := s.store.Set(line)
+	require.NoError(s.T(), err)
+
+	fetched, err := s.store.Get(line.Short)
+	assert.NoError(s.T(), err)
+	assert.Equal(s.T(), line, fetched)
+
+}
+
+func (s *PgRepositoryTestSuite) TestDelete() {
+	rand.Seed(time.Now().UnixNano())
+	URL := "https://test" + helper.GeneratorUUID() + ".com"
+	short := helper.GetHash(URL)
+	line := Line{
+		User:          helper.GeneratorUUID(),
+		URL:           URL,
+		Short:         short,
+		CorrelationID: "1" + fmt.Sprint(rand.Intn(100000)),
+		Status:        0,
+	}
+	err := s.store.Set(line)
+	require.NoError(s.T(), err)
+
+	s.store.chTaskDeleteURL <- []Line{{
+		User:          line.User,
+		URL:           line.URL,
+		Short:         line.Short,
+		CorrelationID: line.CorrelationID,
+		Status:        line.Status,
+	}}
+
+	err = s.store.Delete([]Line{{
+		User:          line.User,
+		URL:           line.URL,
+		Short:         line.Short,
+		CorrelationID: line.CorrelationID,
+		Status:        line.Status,
+	}})
+	require.NoError(s.T(), err)
+
+	fetched, err := s.store.Get(line.Short)
+	assert.NoError(s.T(), err)
+	assert.Equal(s.T(), Line{
+		User:          line.User,
+		URL:           line.URL,
+		Short:         line.Short,
+		CorrelationID: line.CorrelationID,
+		Status:        1,
+	}, fetched)
+
+}
+
+func (s *PgRepositoryTestSuite) TestGetByUser() {
 	rand.Seed(time.Now().UnixNano())
 	URL := "https://test" + helper.GeneratorUUID() + ".com"
 	short := helper.GetHash(URL)
@@ -67,10 +130,6 @@ func (s *PgRepositoryTestSuite) TestSave() {
 
 func TestPgRepositoryTestSuite(t *testing.T) {
 	suite.Run(t, new(PgRepositoryTestSuite))
-}
-
-func TestInMemoryRepository_GetByUser(t *testing.T) {
-
 }
 
 func BenchmarkPg(b *testing.B) {
