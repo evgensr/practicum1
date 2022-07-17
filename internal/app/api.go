@@ -1,3 +1,4 @@
+// Package app for launching a web server
 package app
 
 import (
@@ -19,16 +20,16 @@ import (
 	"time"
 )
 
-// APIserver ...
+// APIserver required components for the server
 type APIserver struct {
-	config       *Config
-	logger       *logrus.Logger
-	router       *mux.Router
-	store        Storage
-	sessionStore sessions.Store
+	config       *Config        //server config
+	logger       *logrus.Logger //logrus is a structured logger for Go
+	router       *mux.Router    //gorilla/mux
+	store        Storage        //interface for working with storage
+	sessionStore sessions.Store //interface for working with sessions
 }
 
-// New ...
+// New Creates a new app.
 func New(config *Config, sessionStore sessions.Store) *APIserver {
 	var store Storage
 	// sessionStore = sessions.NewCookieStore([]byte(config.SessionKey))
@@ -54,7 +55,7 @@ func New(config *Config, sessionStore sessions.Store) *APIserver {
 	}
 }
 
-// Start ...
+// Start web server
 func (s *APIserver) Start() error {
 
 	if err := s.configureLogger(); err != nil {
@@ -77,6 +78,7 @@ func (s *APIserver) Start() error {
 	return http.ListenAndServe(s.config.ServerAddress, s.router)
 }
 
+//configureLogger setup logrus
 func (s *APIserver) configureLogger() error {
 
 	level, err := logrus.ParseLevel(s.config.LogLevel)
@@ -89,6 +91,7 @@ func (s *APIserver) configureLogger() error {
 
 }
 
+//configureRouter setup router
 func (s *APIserver) configureRouter() {
 
 	s.router.Use(s.authenticateUser)
@@ -105,6 +108,8 @@ func (s *APIserver) configureRouter() {
 
 }
 
+//authenticateUser assigns a cookie to a new client
+//if there is already a cookie, decodes it and writes it to ctxKeyUser
 func (s *APIserver) authenticateUser(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 
@@ -156,11 +161,13 @@ func (s *APIserver) authenticateUser(next http.Handler) http.Handler {
 
 }
 
+//error server error handling
 func (s *APIserver) error(w http.ResponseWriter, r *http.Request, code int, err error) {
 	s.respond(w, r, code, map[string]string{"error": err.Error()})
 
 }
 
+//respond server response wrapper
 func (s *APIserver) respond(w http.ResponseWriter, r *http.Request, code int, data interface{}) {
 	w.WriteHeader(code)
 	if data != nil {
@@ -168,6 +175,7 @@ func (s *APIserver) respond(w http.ResponseWriter, r *http.Request, code int, da
 	}
 }
 
+//CreateTable creates a short table if it does not exist
 func (s *APIserver) CreateTable() error {
 	log.Println("config Database: ", s.config.DatabaseDSN)
 	db, err := sql.Open("postgres", s.config.DatabaseDSN)

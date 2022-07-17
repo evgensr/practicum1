@@ -12,22 +12,25 @@ import (
 	"log"
 )
 
+//GetHash - return hash
 func GetHash(text string) string {
 	hash := md5.New()
 	hash.Write([]byte(text))
 	return hex.EncodeToString(hash.Sum(nil))
 }
 
+//GetShort - return short name for URL
 func GetShort(text string) string {
 	// TODO: найти алгоритм который действительно будет предоставлять короткую ссылку
 	return GetHash(text)
 }
 
+//GeneratorUUID - return UUID
 func GeneratorUUID() string {
 	return uuid.New().String()
 }
 
-// Encrypted
+// Encrypted - crypto encoding of a string
 func Encrypted(msg []byte, key string) ([]byte, error) {
 	password := sha256.Sum256([]byte(key))
 	aesblock, err := aes.NewCipher(password[:])
@@ -56,6 +59,7 @@ func Encrypted(msg []byte, key string) ([]byte, error) {
 
 }
 
+//Decrypted - crypto string decoding
 func Decrypted(msg []byte, key string) ([]byte, error) {
 
 	password := sha256.Sum256([]byte(key))
@@ -84,6 +88,7 @@ func Decrypted(msg []byte, key string) ([]byte, error) {
 	return src2, nil
 }
 
+//GenerateRandom - random number generator
 func GenerateRandom(size int) ([]byte, error) {
 	b := make([]byte, size)
 	_, err := rand.Read(b)
@@ -94,6 +99,7 @@ func GenerateRandom(size int) ([]byte, error) {
 	return b, nil
 }
 
+//AddSlash - adding a slash to the end of a line
 func AddSlash(s string) string {
 	if len(s) < 1 {
 		return ""

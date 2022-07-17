@@ -29,6 +29,7 @@ type Row struct {
 	Value string `json:"value"`
 }
 
+//New init
 func New(param string) *Box {
 
 	fileStoragePath := param
