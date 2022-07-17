@@ -76,3 +76,7 @@ curl -v -i  -d "{\"url\": \"https://habr.ru\"}" -X POST http://localhost:8080/ap
 --cookie "practicum=b5dbcaf5e822cff4cdd6b21d410c8314afb3a222cdb38b3a5caf9b2fb48a3c90fff895be71849581b5a41675c413e91558523a06b6c62467d81511be6b8eea99"
 
 
+go test -bench=. -memprofile=base.pprof
+
+
+go tool pprof -top -diff_base=base.pprof result.pprof

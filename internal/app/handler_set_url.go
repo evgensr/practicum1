@@ -64,7 +64,7 @@ func (s *APIserver) HandlerSetURL() http.HandlerFunc {
 			URL: s.config.BaseURL + hash,
 		}
 		// записываем в лог ответ
-		s.logger.Info("HandlerSetURL: response ", data)
+		// s.logger.Info("HandlerSetURL: response ", data)
 
 		// пишем в http.ResponseWriter ответ json
 		json.NewEncoder(w).Encode(data)

@@ -53,7 +53,8 @@ func (box *Box) Set(line Line) error {
 		Status:        line.Status,
 	}
 
-	box.addItem(newLine)
+	// box.addItem(newLine)
+	box.Items = append(box.Items, newLine)
 	return nil
 
 }

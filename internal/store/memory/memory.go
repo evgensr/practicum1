@@ -31,6 +31,7 @@ func New(param string) *Box {
 
 	box := &Box{
 		fileStoragePath: fileStoragePath,
+		Items:           make([]Line, 5000),
 	}
 
 	return box
