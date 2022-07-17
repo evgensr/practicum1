@@ -11,7 +11,6 @@ func (s *APIserver) HandlerPing() http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		// s.config.DatabaseDSN = "host=localhost user=postgres password=postgres dbname=restapi sslmode=disable"
 		log.Println("DatabaseDSN: ", s.config.DatabaseDSN)
 		db, err := sql.Open("postgres", s.config.DatabaseDSN)
 		if err != nil {
