@@ -39,6 +39,29 @@ func (s *PgRepositoryTestSuite) TearDownSuite() {
 	require.NoError(s.T(), err)
 }
 
+func (s *PgRepositoryTestSuite) TestSet() {
+	rand.Seed(time.Now().UnixNano())
+	URL := "https://test" + helper.GeneratorUUID() + ".com"
+	short := helper.GetHash(URL)
+	line := Line{
+		User:          helper.GeneratorUUID(),
+		URL:           URL,
+		Short:         short,
+		CorrelationID: "1" + fmt.Sprint(rand.Intn(100000)),
+		Status:        0,
+	}
+	err := s.store.Set(line)
+	require.NoError(s.T(), err)
+
+	var fetched Line
+	err = s.store.db.QueryRow("SELECT original_url, short_url, user_id, correlation_id, status FROM  short  WHERE  short_url = $1",
+		line.Short,
+	).Scan(&fetched.URL, &fetched.Short, &fetched.User, &fetched.CorrelationID, &fetched.Status)
+
+	assert.NoError(s.T(), err)
+	assert.Equal(s.T(), line, fetched)
+}
+
 func (s *PgRepositoryTestSuite) TestGet() {
 	rand.Seed(time.Now().UnixNano())
 	URL := "https://test" + helper.GeneratorUUID() + ".com"
@@ -56,6 +79,32 @@ func (s *PgRepositoryTestSuite) TestGet() {
 	fetched, err := s.store.Get(line.Short)
 	assert.NoError(s.T(), err)
 	assert.Equal(s.T(), line, fetched)
+
+}
+
+func (s *PgRepositoryTestSuite) TestGetByUser() {
+	rand.Seed(time.Now().UnixNano())
+	URL := "https://test" + helper.GeneratorUUID() + ".com"
+	short := helper.GetHash(URL)
+	line := Line{
+		User:          helper.GeneratorUUID(),
+		URL:           URL,
+		Short:         short,
+		CorrelationID: "1" + fmt.Sprint(rand.Intn(100000)),
+		Status:        0,
+	}
+	err := s.store.Set(line)
+	require.NoError(s.T(), err)
+
+	fetched := s.store.GetByUser(line.User)
+	assert.NoError(s.T(), err)
+	assert.Equal(s.T(), []Line{{
+		User:          line.User,
+		URL:           line.URL,
+		Short:         line.Short,
+		CorrelationID: line.CorrelationID,
+		Status:        line.Status,
+	}}, fetched)
 
 }
 
@@ -99,32 +148,6 @@ func (s *PgRepositoryTestSuite) TestDelete() {
 		CorrelationID: line.CorrelationID,
 		Status:        1,
 	}, fetched)
-
-}
-
-func (s *PgRepositoryTestSuite) TestGetByUser() {
-	rand.Seed(time.Now().UnixNano())
-	URL := "https://test" + helper.GeneratorUUID() + ".com"
-	short := helper.GetHash(URL)
-	line := Line{
-		User:          helper.GeneratorUUID(),
-		URL:           URL,
-		Short:         short,
-		CorrelationID: "1" + fmt.Sprint(rand.Intn(100000)),
-		Status:        0,
-	}
-	err := s.store.Set(line)
-	require.NoError(s.T(), err)
-
-	fetched := s.store.GetByUser(line.User)
-	assert.NoError(s.T(), err)
-	assert.Equal(s.T(), []Line{{
-		User:          line.User,
-		URL:           line.URL,
-		Short:         line.Short,
-		CorrelationID: line.CorrelationID,
-		Status:        line.Status,
-	}}, fetched)
 
 }
 
