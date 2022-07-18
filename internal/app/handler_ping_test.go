@@ -2,12 +2,13 @@ package app
 
 import (
 	"bytes"
-	"github.com/gorilla/sessions"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"testing"
+
+	"github.com/gorilla/sessions"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestPing(t *testing.T) {

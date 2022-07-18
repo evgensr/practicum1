@@ -3,11 +3,12 @@ package app
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/gorilla/sessions"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/gorilla/sessions"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestApiServer_Handler(t *testing.T) {

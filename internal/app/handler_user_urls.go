@@ -3,9 +3,10 @@ package app
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/evgensr/practicum1/internal/store"
 	"log"
 	"net/http"
+
+	"github.com/evgensr/practicum1/internal/store"
 )
 
 // HandlerUserUrls
@@ -20,7 +21,7 @@ func (s *APIserver) HandlerUserUrls() http.HandlerFunc {
 
 		var line []Line
 		var bLine []store.Line
-		// заголов ответа json
+		// заголовок ответа json
 		w.Header().Set("Content-Type", "application/json")
 		// id пользователя
 		userID := fmt.Sprintf("%v", r.Context().Value(ctxKeyUser))

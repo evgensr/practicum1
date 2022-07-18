@@ -2,10 +2,11 @@ package app
 
 import (
 	"fmt"
-	"github.com/evgensr/practicum1/internal/helper"
 	"io/ioutil"
 	"log"
 	"net/http"
+
+	"github.com/evgensr/practicum1/internal/helper"
 )
 
 // HandlerSetURLSimply - создаем запись для url

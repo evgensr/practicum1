@@ -2,11 +2,12 @@ package app
 
 import (
 	"compress/gzip"
-	_ "github.com/lib/pq" // ...
 	"io"
 	"log"
 	"net/http"
 	"strings"
+
+	_ "github.com/lib/pq" // ...
 )
 
 type gzipWriter struct {

@@ -1,9 +1,10 @@
 package app
 
 import (
-	"github.com/gorilla/mux"
 	"log"
 	"net/http"
+
+	"github.com/gorilla/mux"
 )
 
 // HandlerGetURL получить по хешу ссылку

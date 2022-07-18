@@ -3,10 +3,11 @@ package file
 import (
 	"bufio"
 	"encoding/json"
-	"github.com/evgensr/practicum1/internal/store"
 	"log"
 	"os"
 	"sync"
+
+	"github.com/evgensr/practicum1/internal/store"
 )
 
 type Box struct {

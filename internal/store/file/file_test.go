@@ -2,14 +2,15 @@ package file
 
 import (
 	"fmt"
-	"github.com/evgensr/practicum1/internal/helper"
-	"github.com/stretchr/testify/assert"
-	"github.com/stretchr/testify/require"
-	"github.com/stretchr/testify/suite"
 	"math/rand"
 	"os"
 	"testing"
 	"time"
+
+	"github.com/evgensr/practicum1/internal/helper"
+	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
+	"github.com/stretchr/testify/suite"
 )
 
 type FileRepositoryTestSuite struct {

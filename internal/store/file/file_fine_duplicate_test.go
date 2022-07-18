@@ -1,9 +1,10 @@
 package file
 
 import (
+	"testing"
+
 	"github.com/evgensr/practicum1/internal/helper"
 	"github.com/stretchr/testify/assert"
-	"testing"
 )
 
 func TestFineDuplicate(t *testing.T) {

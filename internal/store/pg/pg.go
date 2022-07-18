@@ -2,9 +2,10 @@ package pg
 
 import (
 	"database/sql"
-	"github.com/evgensr/practicum1/internal/store"
 	"log"
 	"sync"
+
+	"github.com/evgensr/practicum1/internal/store"
 )
 
 type Box struct {

@@ -7,7 +7,12 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"errors"
+
 	"fmt"
+	"log"
+	"net/http"
+	"time"
+
 	"github.com/evgensr/practicum1/internal/helper"
 	"github.com/evgensr/practicum1/internal/store/file"
 	"github.com/evgensr/practicum1/internal/store/memory"
@@ -15,9 +20,6 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/gorilla/sessions"
 	"github.com/sirupsen/logrus"
-	"log"
-	"net/http"
-	"time"
 )
 
 // APIserver required components for the server

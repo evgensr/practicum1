@@ -1,9 +1,10 @@
 package app
 
 import (
-	"github.com/caarlos0/env/v6"
 	"os"
 	"testing"
+
+	"github.com/caarlos0/env/v6"
 
 	"github.com/stretchr/testify/assert"
 )

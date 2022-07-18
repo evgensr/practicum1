@@ -3,9 +3,10 @@ package app
 import (
 	"encoding/json"
 	"fmt"
+	"net/http"
+
 	"github.com/asaskevich/govalidator"
 	"github.com/evgensr/practicum1/internal/helper"
-	"net/http"
 )
 
 // HandlerSetURL - создаем запись для url
