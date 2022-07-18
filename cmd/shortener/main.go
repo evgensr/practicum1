@@ -1,101 +1,42 @@
 package main
 
 import (
-	"crypto/md5"
-	"encoding/hex"
+	"flag"
+
+	"github.com/caarlos0/env/v6"
+	"github.com/evgensr/practicum1/internal/app"
+	"github.com/gorilla/sessions"
+
 	"log"
-	"net/http"
+	"os"
 )
 
-const (
-	port = "8080"
-)
-
-var mapURL = make(map[string]string)
-
-// handlerURL — обработчик запроса.
-func handlerURL(w http.ResponseWriter, r *http.Request) {
-
-	switch r.Method {
-	// если методом POST
-	case "POST":
-		log.Println("post request")
-
-		// Call ParseForm() to parse the raw query and update r.PostForm and r.Form.
-		if err := r.ParseForm(); err != nil {
-			log.Printf("ParseForm() err: %v", err)
-			return
-		}
-
-		address := r.FormValue("address")
-		hash := getHash(address)
-		log.Println(hash)
-		mapURL[hash] = address
-		log.Printf("Address = %s\n", address)
-		w.WriteHeader(201)
-		w.Write([]byte("http://localhost:" + port + "/" + hash))
-
-		// mapURL[]
-	case "GET":
-		// hash := getHash(r.RequestURI)
-		// url := getHash(r.RequestURI)
-		// url := r.RequestURI
-		// inputFmt := r.RequestURI[1:]
-		//log.Println(inputFmt)
-		urlHash := r.RequestURI[1:]
-		log.Println(urlHash)
-
-		val, exists := mapURL[urlHash]
-		log.Println(mapURL)
-		if exists {
-			log.Println(val)
-			w.Header().Set("Location", val)
-			w.WriteHeader(307)
-			w.Write(nil)
-		} else {
-			delete(mapURL, urlHash)
-			w.WriteHeader(400)
-		}
-		// md5.Sum()
-		// data := []byte(r.RequestURI)
-		// h := md5.New()
-		// h.Sum(data)
-		// fmt.Println(time.RFC822Z, md5.Sum(data), h.Sum(data), h.Sum([]byte("/12")))
-		// fmt.Println("GET")
-	}
-
-	// fmt.Println(r.Header)
-	// fmt.Println(time.RFC822Z, r.RequestURI)
-
-	// w.Write([]byte("<h1>Hello, World</h1>"))
-}
-
-func form(w http.ResponseWriter, r *http.Request) {
-
-	log.Println("form")
-	http.ServeFile(w, r, "form.html")
-}
-
-func getHash(text string) string {
-	hasher := md5.New()
-	hasher.Write([]byte(text))
-	return hex.EncodeToString(hasher.Sum(nil))
-}
+var version = "0.0.2" // application version
 
 func main() {
 
-	log.Println("start server")
+	conf := app.NewConfig()
+	err := env.Parse(&conf)
 
-	// маршрутизация запросов обработчику
-	http.HandleFunc("/", handlerURL)
-	http.HandleFunc("/create", form)
-
-	http.Handle("/favicon.ico", http.NotFoundHandler())
-
-	// запуск сервера с адресом localhost, порт 8081
-	err := http.ListenAndServe(":"+port, nil)
+	// spew.Dump(conf)
 
 	if err != nil {
+		log.Printf("[ERROR] failed to parse flags: %v", err)
+		os.Exit(1)
+	}
+
+	flag.StringVar(&conf.ServerAddress, "a", conf.ServerAddress, "SERVER_ADDRESS")
+	flag.StringVar(&conf.BaseURL, "b", conf.BaseURL, "BASE_URL")
+	flag.StringVar(&conf.FileStoragePath, "f", conf.FileStoragePath, "FILE_STORAGE_PATH")
+	flag.StringVar(&conf.DatabaseDSN, "d", conf.DatabaseDSN, "DATABASE_DSN")
+
+	flag.Parse()
+
+	sessionStore := sessions.NewCookieStore([]byte(conf.SessionKey))
+
+	server := app.New(&conf, sessionStore)
+
+	if err := server.Start(); err != nil {
 		log.Fatal(err)
 	}
 
