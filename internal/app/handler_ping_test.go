@@ -38,18 +38,4 @@ func TestPing(t *testing.T) {
 		assert.Equal(t, http.StatusOK, rec.Code)
 	})
 
-	t.Run("connection refused", func(t *testing.T) {
-
-		dsn := "postgres://google:google@127.0.0.1:15432/restapi?sslmode=disable"
-		conf := NewConfig()
-		sessionStore := sessions.NewCookieStore([]byte(conf.SessionKey))
-		conf.DatabaseDSN = dsn
-		s := New(&conf, sessionStore)
-		rec := httptest.NewRecorder()
-		b := &bytes.Buffer{}
-		req, _ := http.NewRequest(http.MethodGet, "/ping", b)
-		s.HandlerPing().ServeHTTP(rec, req)
-		assert.Equal(t, http.StatusInternalServerError, rec.Code)
-	})
-
 }
