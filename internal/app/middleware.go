@@ -20,7 +20,7 @@ func (w gzipWriter) Write(b []byte) (int, error) {
 	return w.Writer.Write(b)
 }
 
-// GzipHandleEncode gzip-сжатие ответа
+// GzipHandleEncode gzip-compression of the response
 func (s *APIserver) GzipHandleEncode(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// проверяем, что клиент поддерживает gzip-сжатие
@@ -50,7 +50,7 @@ func (s *APIserver) GzipHandleEncode(next http.Handler) http.Handler {
 	})
 }
 
-// GzipHandleDecode
+// GzipHandleDecode unpacking the request
 func (s *APIserver) GzipHandleDecode(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// проверяем, что клиент поддерживает gzip-сжатие

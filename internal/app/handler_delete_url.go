@@ -13,7 +13,7 @@ func (s *APIserver) HandlerDeleteURL() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 
 		log.Println("delete")
-		// создаем перменную
+		// создаем переменную
 		decoder := json.NewDecoder(r.Body)
 
 		// объявляем переменную запроса
@@ -28,7 +28,7 @@ func (s *APIserver) HandlerDeleteURL() http.HandlerFunc {
 		log.Println("lineRequest ", lineRequest)
 
 		if err != nil {
-			log.Println("lineRequest ", err)
+			log.Println("lineRequest err", err)
 			return
 		}
 

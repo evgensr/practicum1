@@ -3,13 +3,12 @@ package app
 import (
 	"fmt"
 	"io/ioutil"
-	"log"
 	"net/http"
 
 	"github.com/evgensr/practicum1/internal/helper"
 )
 
-// HandlerSetURLSimply - создаем запись для url
+// HandlerSetURLSimply creating an entry for the url
 func (s *APIserver) HandlerSetURLSimply() http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
@@ -19,9 +18,6 @@ func (s *APIserver) HandlerSetURLSimply() http.HandlerFunc {
 			return
 		}
 
-		log.Println(string(b))
-
-		// получаем short
 		hash := helper.GetShort(string(b))
 
 		// id пользователя
@@ -32,10 +28,10 @@ func (s *APIserver) HandlerSetURLSimply() http.HandlerFunc {
 			Short: hash,
 			User:  userID,
 		}); err != nil {
-			// заголов ответа 409
+			// заголовок ответа 409
 			w.WriteHeader(http.StatusConflict)
 		} else {
-			// заголов ответа 201
+			// заголовок ответа 201
 			w.WriteHeader(http.StatusCreated)
 		}
 

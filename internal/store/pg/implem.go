@@ -6,6 +6,7 @@ import (
 	"strings"
 )
 
+//Get take an entry by short name
 func (box *Box) Get(key string) (Line, error) {
 
 	var line Line
@@ -19,7 +20,7 @@ func (box *Box) Get(key string) (Line, error) {
 
 }
 
-// GetByUser получить url по id юзера
+// GetByUser get url by user id
 func (box *Box) GetByUser(idUser string) (lines []Line) {
 	var line []Line
 	var bLine Line
@@ -50,12 +51,11 @@ func (box *Box) GetByUser(idUser string) (lines []Line) {
 
 	}
 
-	// log.Println("err: ", err)
-	// log.Println("lin: ", bLine)
 	return line
 
 }
 
+//Set write a string with data
 func (box *Box) Set(line Line) error {
 
 	var id int64
@@ -65,9 +65,6 @@ func (box *Box) Set(line Line) error {
 		line.User,
 		line.CorrelationID,
 	).Scan(&id)
-
-	//log.Println("err: ", err)
-	//log.Println(id)
 
 	// log.Println(strings.Contains(err.Error(), "duplicate"))
 	duplicate := false
@@ -82,8 +79,8 @@ func (box *Box) Set(line Line) error {
 	return nil
 }
 
+//Delete change the status of an entry to a deleted one
 func (box *Box) Delete(line []Line) error {
-	// log.Println(line)
 	box.chTaskDeleteURL <- line
 	return nil
 }

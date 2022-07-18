@@ -20,8 +20,8 @@ func NewConfig() Config {
 type key int
 
 const (
-	sessionName     = "practicum"
-	ctxKeyUser  key = iota
+	sessionName     = "practicum" // cookies for the user
+	ctxKeyUser  key = iota        // context id req
 )
 
 type request struct {

@@ -5,6 +5,7 @@ import (
 	"log"
 )
 
+//Get take an entry by short name
 func (box *Box) Get(key string) (Line, error) {
 
 	box.RLock()
@@ -18,7 +19,7 @@ func (box *Box) Get(key string) (Line, error) {
 	return Line{}, errors.New("not found")
 }
 
-// GetByUser получить url по id юзера
+// GetByUser get url by user id
 func (box *Box) GetByUser(idUser string) (lines []Line) {
 
 	box.RLock()
@@ -34,6 +35,7 @@ func (box *Box) GetByUser(idUser string) (lines []Line) {
 	return line
 }
 
+//Set write a string with data
 func (box *Box) Set(line Line) error {
 
 	box.RLock()
@@ -60,6 +62,7 @@ func (box *Box) Set(line Line) error {
 
 }
 
+//Delete change the status of an entry to a deleted one
 func (box *Box) Delete(line []Line) error {
 	box.RLock()
 	defer box.RUnlock()

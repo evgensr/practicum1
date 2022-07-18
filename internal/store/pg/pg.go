@@ -1,3 +1,4 @@
+// Package pg stores data in PG
 package pg
 
 import (
@@ -18,6 +19,7 @@ type Box struct {
 
 type Line = store.Line
 
+//New init
 func New(param string) *Box {
 
 	box := &Box{
@@ -43,6 +45,7 @@ func New(param string) *Box {
 
 }
 
+//newDB create connect to DB
 func newDB(databaseURL string) (*sql.DB, error) {
 	db, err := sql.Open("postgres", databaseURL)
 	if err != nil {
@@ -55,6 +58,7 @@ func newDB(databaseURL string) (*sql.DB, error) {
 
 }
 
+//taskDelURL change the status of an entry to a deleted one
 func (box *Box) taskDelURL(ch chan []Line) {
 	for x := range ch {
 		// log.Println("reader ", x)

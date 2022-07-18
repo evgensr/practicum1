@@ -1,3 +1,4 @@
+// Package file stores data in file
 package file
 
 import (
@@ -39,9 +40,9 @@ func New(param string) *Box {
 		fileStoragePath: fileStoragePath,
 	}
 
-	// открывам файл
+	// open file
 	file, err := os.Open(fileStoragePath)
-	// закрываем файл
+	// close file
 	defer func() {
 		errCloseFile := file.Close()
 		if err == nil {
@@ -49,7 +50,7 @@ func New(param string) *Box {
 		}
 	}()
 
-	// если файл не найдет, возврощаем пустую box
+	// if the file is not found, we return an empty box
 	if err != nil {
 		return box
 	}
@@ -76,6 +77,7 @@ func New(param string) *Box {
 
 }
 
+//save saving the data to a file
 func save(nameFile string, line Line) error {
 
 	file, errFile := os.OpenFile(nameFile, os.O_WRONLY|os.O_CREATE|os.O_APPEND, 0777)

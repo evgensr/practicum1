@@ -3,13 +3,12 @@ package app
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"net/http"
 
 	"github.com/evgensr/practicum1/internal/store"
 )
 
-// HandlerUserUrls
+// HandlerUserUrls creating an entry for user
 func (s *APIserver) HandlerUserUrls() http.HandlerFunc {
 
 	type Line struct {
@@ -34,7 +33,6 @@ func (s *APIserver) HandlerUserUrls() http.HandlerFunc {
 				})
 			}
 
-			log.Println(line)
 			// пишем в http.ResponseWriter ответ json
 			json.NewEncoder(w).Encode(line)
 		} else {

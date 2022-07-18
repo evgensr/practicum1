@@ -9,12 +9,11 @@ import (
 	"github.com/evgensr/practicum1/internal/helper"
 )
 
-// HandlerSetURL - создаем запись для url
+// HandlerSetURL creating an entry for the url
 func (s *APIserver) HandlerSetURL() http.HandlerFunc {
 
 	return func(w http.ResponseWriter, r *http.Request) {
 
-		// создаем перменную
 		decoder := json.NewDecoder(r.Body)
 
 		// объявляем переменную запроса
@@ -23,7 +22,6 @@ func (s *APIserver) HandlerSetURL() http.HandlerFunc {
 		// проверяем на валидность URL
 		_, err := govalidator.ValidateStruct(decoder)
 		if err != nil {
-			// логируем ошибку
 			s.logger.Warning("HandlerSetURL: validator fail   ", err.Error())
 			return
 		}
@@ -31,18 +29,15 @@ func (s *APIserver) HandlerSetURL() http.HandlerFunc {
 		// декодируем в структуру request
 		err = decoder.Decode(&request)
 		if err != nil {
-			// логируем ошибку
 			s.logger.Warning("HandlerSetURL: request not json ", err.Error())
 			http.Error(w, err.Error(), 500)
 			return
 		}
 
-		// spew.Dump(request.URL)
-
 		// получаем short
 		hash := helper.GetShort(request.URL)
 
-		// заголов ответа json
+		// заголовок ответа json
 		w.Header().Set("Content-Type", "application/json")
 
 		// id пользователя
@@ -53,10 +48,10 @@ func (s *APIserver) HandlerSetURL() http.HandlerFunc {
 			User:  userID,
 			Short: hash,
 		}); err != nil {
-			// заголов ответа 409
+			// заголовок ответа 409
 			w.WriteHeader(http.StatusConflict)
 		} else {
-			// заголов ответа 201
+			// заголовок ответа 201
 			w.WriteHeader(http.StatusCreated)
 		}
 
@@ -64,8 +59,6 @@ func (s *APIserver) HandlerSetURL() http.HandlerFunc {
 		data := response{
 			URL: s.config.BaseURL + hash,
 		}
-		// записываем в лог ответ
-		// s.logger.Info("HandlerSetURL: response ", data)
 
 		// пишем в http.ResponseWriter ответ json
 		json.NewEncoder(w).Encode(data)

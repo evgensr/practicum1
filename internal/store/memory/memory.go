@@ -1,8 +1,10 @@
+// Package memory stores data in RAM
 package memory
 
 import (
-	"github.com/evgensr/practicum1/internal/store"
 	"sync"
+
+	"github.com/evgensr/practicum1/internal/store"
 )
 
 type Box struct {
@@ -25,6 +27,7 @@ type Row struct {
 	Value string `json:"value"`
 }
 
+//New init
 func New(param string) *Box {
 
 	fileStoragePath := param
@@ -38,25 +41,13 @@ func New(param string) *Box {
 
 }
 
+//addItem a row with data in the storage is added
 func (box *Box) addItem(item Line) []Line {
 	box.Items = append(box.Items, item)
 	return box.Items
 }
 
-func removeDuplicateElement(languages []string) []string {
-	result := make([]string, 0, len(languages))
-	temp := map[string]struct{}{}
-	for _, item := range languages {
-		if _, ok := temp[item]; !ok {
-			temp[item] = struct{}{}
-			result = append(result, item)
-		}
-	}
-
-	return result
-}
-
-// fineDuplicate true если находим дубликат
+//fineDuplicate true if we find a duplicate
 func fineDuplicate(items *Box, str string) bool {
 
 	if len(items.Items) == 0 {
