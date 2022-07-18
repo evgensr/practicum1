@@ -35,6 +35,10 @@ func (box *Box) GetByUser(idUser string) (lines []Line) {
 		if errClose != nil {
 			log.Println(errClose)
 		}
+		errRows := rows.Err() // or modify return value
+		if errClose != nil {
+			log.Println(errRows)
+		}
 	}()
 
 	if err != nil {
