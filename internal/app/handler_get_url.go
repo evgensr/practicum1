@@ -13,6 +13,7 @@ func (s *APIserver) HandlerGetURL() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		vars := mux.Vars(r)
 
+		log.Println("vars ", vars)
 		if len(vars["hash"]) < 1 {
 			s.logger.Info("HandlerGetURL: vars hash is small ", vars["hash"])
 			w.WriteHeader(http.StatusInternalServerError)

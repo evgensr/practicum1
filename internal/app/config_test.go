@@ -26,42 +26,42 @@ func TestNew(t *testing.T) {
 		err := os.Setenv("SERVER_ADDRESS", "127.0.0.1:8181")
 		assert.NoError(t, err)
 		defer func() {
-			err := os.Unsetenv("SERVER_ADDRESS")
+			err = os.Unsetenv("SERVER_ADDRESS")
 			assert.NoError(t, err)
 		}()
 
 		err = os.Setenv("BASE_URL", "http://127.0.0.1:8181/")
 		assert.NoError(t, err)
 		defer func() {
-			err := os.Unsetenv("BASE_URL")
+			err = os.Unsetenv("BASE_URL")
 			assert.NoError(t, err)
 		}()
 
 		err = os.Setenv("FILE_STORAGE_PATH", "store.txt")
 		assert.NoError(t, err)
 		defer func() {
-			err := os.Unsetenv("FILE_STORAGE_PATH")
+			err = os.Unsetenv("FILE_STORAGE_PATH")
 			assert.NoError(t, err)
 		}()
 
 		err = os.Setenv("LOG_LEVEL", "info")
 		assert.NoError(t, err)
 		defer func() {
-			err := os.Unsetenv("LOG_LEVEL")
+			err = os.Unsetenv("LOG_LEVEL")
 			assert.NoError(t, err)
 		}()
 
 		err = os.Setenv("SESSION_KEY", "key")
 		assert.NoError(t, err)
 		defer func() {
-			err := os.Unsetenv("SESSION_KEY")
+			err = os.Unsetenv("SESSION_KEY")
 			assert.NoError(t, err)
 		}()
 
 		err = os.Setenv("DATABASE_DSN", "localhost")
 		assert.NoError(t, err)
 		defer func() {
-			err := os.Unsetenv("DATABASE_DSN")
+			err = os.Unsetenv("DATABASE_DSN")
 			assert.NoError(t, err)
 		}()
 

@@ -16,9 +16,6 @@ func (s *APIserver) HandlerSetURL() http.HandlerFunc {
 
 		decoder := json.NewDecoder(r.Body)
 
-		// объявляем переменную запроса
-		var request request
-
 		// проверяем на валидность URL
 		_, err := govalidator.ValidateStruct(decoder)
 		if err != nil {
@@ -26,8 +23,11 @@ func (s *APIserver) HandlerSetURL() http.HandlerFunc {
 			return
 		}
 
+		// объявляем переменную запроса
+		var req request
+
 		// декодируем в структуру request
-		err = decoder.Decode(&request)
+		err = decoder.Decode(&req)
 		if err != nil {
 			s.logger.Warning("HandlerSetURL: request not json ", err.Error())
 			http.Error(w, err.Error(), 500)
@@ -35,7 +35,7 @@ func (s *APIserver) HandlerSetURL() http.HandlerFunc {
 		}
 
 		// получаем short
-		hash := helper.GetShort(request.URL)
+		hash := helper.GetShort(req.URL)
 
 		// заголовок ответа json
 		w.Header().Set("Content-Type", "application/json")
@@ -44,7 +44,7 @@ func (s *APIserver) HandlerSetURL() http.HandlerFunc {
 		userID := fmt.Sprintf("%v", r.Context().Value(ctxKeyUser))
 		// записываем в хранилище ключ значение
 		if err := s.store.Set(Line{
-			URL:   request.URL,
+			URL:   req.URL,
 			User:  userID,
 			Short: hash,
 		}); err != nil {

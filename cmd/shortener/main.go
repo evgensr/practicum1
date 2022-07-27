@@ -2,16 +2,18 @@ package main
 
 import (
 	"flag"
+	"fmt"
 
 	"github.com/caarlos0/env/v6"
 	"github.com/evgensr/practicum1/internal/app"
 	"github.com/gorilla/sessions"
 
 	"log"
-	"os"
 )
 
-var version = "0.0.2" // application version
+var buildVersion string = "N/A" // application version
+var buildDate string = "N/A"    // application data
+var buildCommit string = "N/A"  // commit id
 
 func main() {
 
@@ -21,9 +23,12 @@ func main() {
 	// spew.Dump(conf)
 
 	if err != nil {
-		log.Printf("[ERROR] failed to parse flags: %v", err)
-		os.Exit(1)
+		log.Fatalf("[ERROR] failed to parse flags: %v", err)
 	}
+
+	fmt.Printf("Build version: %s\n", buildVersion)
+	fmt.Printf("Build date: %s\n", buildDate)
+	fmt.Printf("Build commit: %s\n", buildCommit)
 
 	flag.StringVar(&conf.ServerAddress, "a", conf.ServerAddress, "SERVER_ADDRESS")
 	flag.StringVar(&conf.BaseURL, "b", conf.BaseURL, "BASE_URL")
