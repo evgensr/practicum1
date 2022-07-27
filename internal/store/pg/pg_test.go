@@ -25,7 +25,7 @@ func (s *PgRepositoryTestSuite) SetupSuite() {
 	dsn := os.Getenv("DATABASE_DSN")
 
 	if dsn == "" {
-		flag.StringVar(&dsn, "d", "postgres://postgres:postgres@postgres:5432/restapi?sslmode=disable", "DATABASE_DSN")
+		flag.StringVar(&dsn, "d", "postgres://postgres:postgres@postgres:5432/praktikum?sslmode=disable", "DATABASE_DSN")
 	}
 
 	store := New(dsn)
