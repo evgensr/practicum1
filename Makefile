@@ -24,7 +24,7 @@ BUILD_DATE=$(shell date -u +%Y-%m-%dT%H:%M:%SZ)
 
 
 all: download test build
-.PHONY: all download test build build-linux install build-staticlint test-bench
+.PHONY: all download test build build-linux install build-staticlint test-bench cover-total pg open-adminer
 
 download:
 	@echo "[*] $@"
@@ -44,6 +44,11 @@ coverage:
 	$(GOTEST) -coverprofile=$(COVERAGE_FILE) $(TESTS)
 	$(GOTOOL) cover -html=$(COVERAGE_FILE)
 
+cover-total:
+	@echo "[*] $@"
+	go test ./... -coverprofile cover.out
+	go tool cover -func cover.out | grep total:
+
 build: download
 	@echo "[*] $@"
 	$(GOBUILD) -o $(BINARY)   -ldflags "-X 'main.buildCommit=${BUILD_COMMIT}' -X main.buildVersion=${BUILD_VERSION}.${BUILD_NUMBER} -X main.buildDate=${BUILD_DATE} "  -v ./cmd/shortener
@@ -56,3 +61,10 @@ build-linux: download
 	@echo "[*] $@"
 	GOOS="linux" GOARCH="amd64" $(GOBUILD) -o $(BINARY_LINUX) -v -ldflags "-X 'main.buildCommit=${BUILD_COMMIT}'" -v ./cmd/shortener
 
+pg:
+	@echo "[*] $@"
+	docker-compose -f docker-compose-pg-only.yml up --build
+
+open-adminer:
+	@echo "[*] $@"
+	open http://localhost:8081/?pgsql=db&username=postgres&db=restapi_dev&ns=public
