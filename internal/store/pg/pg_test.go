@@ -29,6 +29,9 @@ func (s *PgRepositoryTestSuite) SetupSuite() {
 	}
 
 	store := New(dsn)
+
+	err := RunMigrations(dsn, "file://migrations/")
+	require.NoError(s.T(), err)
 	s.store = store
 }
 

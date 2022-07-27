@@ -3,11 +3,8 @@ package app
 
 import (
 	"context"
-	"database/sql"
 	"encoding/hex"
 	"encoding/json"
-	"errors"
-
 	"fmt"
 	"log"
 	"net/http"
@@ -65,7 +62,8 @@ func (s *APIserver) Start() error {
 	}
 
 	if len(s.config.DatabaseDSN) > 1 {
-		if err := s.CreateTable(); err != nil {
+
+		if err := pg.RunMigrations(s.config.DatabaseDSN, "file://internal/store/pg/migrations/"); err != nil {
 			log.Fatal("create table ", err)
 		}
 	}
@@ -178,28 +176,28 @@ func (s *APIserver) respond(w http.ResponseWriter, r *http.Request, code int, da
 }
 
 //CreateTable creates a short table if it does not exist
-func (s *APIserver) CreateTable() error {
-	log.Println("config Database: ", s.config.DatabaseDSN)
-	db, err := sql.Open("postgres", s.config.DatabaseDSN)
-	if err != nil {
-		log.Println("create table func ", err)
-		return err
-	}
-	if err := db.Ping(); err != nil {
-		log.Println("ping err ", err)
-		return err
-	}
-
-	if _, err := db.Exec("CREATE TABLE  IF NOT EXISTS short" +
-		"(id serial primary key," +
-		"original_url varchar(4096) not null," +
-		"short_url varchar(32) UNIQUE not null," +
-		"user_id varchar(36) not null," +
-		"correlation_id varchar(36) null," +
-		"status smallint not null DEFAULT 0);"); err != nil {
-		return errors.New("error sql ")
-	}
-
-	return nil
-
-}
+//func (s *APIserver) CreateTable() error {
+//	log.Println("config Database: ", s.config.DatabaseDSN)
+//	db, err := sql.Open("postgres", s.config.DatabaseDSN)
+//	if err != nil {
+//		log.Println("create table func ", err)
+//		return err
+//	}
+//	if err := db.Ping(); err != nil {
+//		log.Println("ping err ", err)
+//		return err
+//	}
+//
+//	if _, err := db.Exec("CREATE TABLE  IF NOT EXISTS short" +
+//		"(id serial primary key," +
+//		"original_url varchar(4096) not null," +
+//		"short_url varchar(32) UNIQUE not null," +
+//		"user_id varchar(36) not null," +
+//		"correlation_id varchar(36) null," +
+//		"status smallint not null DEFAULT 0);"); err != nil {
+//		return errors.New("error sql ")
+//	}
+//
+//	return nil
+//
+//}

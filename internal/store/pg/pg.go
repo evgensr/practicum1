@@ -3,8 +3,14 @@ package pg
 
 import (
 	"database/sql"
+	"errors"
+	"fmt"
 	"log"
 	"sync"
+
+	"github.com/golang-migrate/migrate/v4"
+	_ "github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 
 	"github.com/evgensr/practicum1/internal/store"
 )
@@ -72,4 +78,23 @@ func (box *Box) taskDelURL(ch chan []Line) {
 		}
 
 	}
+}
+
+func RunMigrations(dsn string, migrationsPath string) error {
+	m, err := migrate.New(migrationsPath, dsn)
+	if err != nil {
+		return err
+	}
+
+	err = m.Up()
+	if errors.Is(err, migrate.ErrNoChange) {
+		fmt.Println("Nothing to migrate")
+		return nil
+	}
+	if err != nil {
+		return err
+	}
+
+	fmt.Println("Migrated successfully")
+	return nil
 }
