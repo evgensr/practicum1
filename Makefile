@@ -63,7 +63,7 @@ build-linux: download
 
 pg:
 	@echo "[*] $@"
-	docker-compose -f docker-compose-pg-only.yml up --build
+	docker-compose -f docker-compose-pg-only.yml up --build --remove-orphans
 
 open-adminer:
 	@echo "[*] $@"

@@ -1,12 +1,13 @@
 version: '3.8'
 services:
-  db:
+  postgres:
     image: postgres:12
+    container_name: postgres
     restart: always
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres
-      - POSTGRES_DATABASE=restapi
+      - POSTGRES_DATABASE=praktikum
     ports:
       - '5432:5432'
     volumes:

@@ -28,7 +28,7 @@ func TestAPIserver_HandlerSetURLSimply(t *testing.T) {
 		rr := httptest.NewRecorder()
 		// Need to create a router that we can pass the request through so that the vars will be added to the context
 		router := mux.NewRouter()
-		s.HandlerSetURL().ServeHTTP(rr, req)
+		s.HandlerSetURLSimply().ServeHTTP(rr, req)
 		router.HandleFunc("/", s.HandlerGetURL())
 		router.ServeHTTP(rr, req)
 
