@@ -16,6 +16,8 @@ COVERAGE_FILE=coverage.out
 
 BUILD=build/
 
+KEYLEN=4096
+
 
 BUILD_VERSION=$(shell git tag|tail -n 1)
 BUILD_NUMBER=$(strip $(if $(TRAVIS_BUILD_NUMBER), $(TRAVIS_BUILD_NUMBER), 0))
@@ -32,7 +34,7 @@ download:
 
 test: download
 	@echo "[*] $@"
-	$(GOTEST) -v $(TESTS)
+	go clean -testcache && $(GOTEST) -v $(TESTS)
 
 test-bench: download
 	@echo "[*] $@"
@@ -68,3 +70,8 @@ pg:
 open-adminer:
 	@echo "[*] $@"
 	open http://localhost:8081/?pgsql=db&username=postgres&db=restapi_dev&ns=public
+
+# create server key ############################################################
+server.key:
+	@echo "[*] $@"
+	openssl genrsa -out server.key 2048 ; openssl req -new -x509 -sha256 -key server.key -out server.crt -days 3650

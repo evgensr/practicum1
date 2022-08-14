@@ -1,6 +1,7 @@
 package file
 
 import (
+	"context"
 	"errors"
 	"log"
 )
@@ -74,5 +75,10 @@ func (box *Box) Delete(line []Line) error {
 			}
 		}
 	}
+	return nil
+}
+
+func (box *Box) Shutdown(ctx context.Context) error {
+
 	return nil
 }

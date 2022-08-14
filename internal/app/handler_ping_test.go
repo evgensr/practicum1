@@ -7,7 +7,6 @@ import (
 	"os"
 	"testing"
 
-	"github.com/gorilla/sessions"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -28,9 +27,9 @@ func TestPing(t *testing.T) {
 		t.Log(os.Getenv("DATABASE_DSN"))
 
 		conf := NewConfig()
-		sessionStore := sessions.NewCookieStore([]byte(conf.SessionKey))
+		// sessionStore := sessions.NewCookieStore([]byte(conf.SessionKey))
 		conf.DatabaseDSN = dsn
-		s := New(&conf, sessionStore)
+		s := New(&conf)
 		rec := httptest.NewRecorder()
 		b := &bytes.Buffer{}
 		req, _ := http.NewRequest(http.MethodGet, "/ping", b)
@@ -42,9 +41,9 @@ func TestPing(t *testing.T) {
 
 		dsn := "postgres://google:google@127.0.0.1:15432/restapi?sslmode=disable"
 		conf := NewConfig()
-		sessionStore := sessions.NewCookieStore([]byte(conf.SessionKey))
+		// sessionStore := sessions.NewCookieStore([]byte(conf.SessionKey))
 		conf.DatabaseDSN = dsn
-		s := New(&conf, sessionStore)
+		s := New(&conf)
 		rec := httptest.NewRecorder()
 		b := &bytes.Buffer{}
 		req, _ := http.NewRequest(http.MethodGet, "/ping", b)

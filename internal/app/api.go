@@ -2,6 +2,7 @@
 package app
 
 import (
+	"bytes"
 	"context"
 	"encoding/hex"
 	"encoding/json"
@@ -19,6 +20,10 @@ import (
 	"github.com/sirupsen/logrus"
 )
 
+const (
+	shutdownTimeout = 5 * time.Second
+)
+
 // APIserver required components for the server
 type APIserver struct {
 	config       *Config        //server config
@@ -26,36 +31,56 @@ type APIserver struct {
 	router       *mux.Router    //gorilla/mux
 	store        Storage        //interface for working with storage
 	sessionStore sessions.Store //interface for working with sessions
+	closer       *Closer
 }
 
 // New Creates a new app.
-func New(config *Config, sessionStore sessions.Store) *APIserver {
+func New(config *Config) *APIserver {
 	var store Storage
+	logger := logrus.New()
+
+	c := &Closer{}
+
 	// sessionStore = sessions.NewCookieStore([]byte(config.SessionKey))
 	config.BaseURL = helper.AddSlash(config.BaseURL)
 	param := config.FileStoragePath
 	if len(config.DatabaseDSN) > 1 {
 		store = pg.New(config.DatabaseDSN)
-		log.Println("store pg")
+		logger.Info("store pg")
 	} else if len(param) > 1 {
 		store = file.New(param)
-		log.Println("store file")
+		logger.Info("store file")
 	} else {
 		store = memory.New(param)
-		log.Println("store memory")
+
+		logger.Info("store memory")
 	}
+
+	sessionStore := sessions.NewCookieStore([]byte(config.SessionKey))
 
 	return &APIserver{
 		config:       config,
-		logger:       logrus.New(),
+		logger:       logger,
 		router:       mux.NewRouter(),
 		store:        store,
 		sessionStore: sessionStore,
+		closer:       c,
 	}
 }
 
 // Start web server
-func (s *APIserver) Start() error {
+func (s *APIserver) Start(ctx context.Context) error {
+
+	// c := &Closer{}
+
+	// var mux = http.NewServeMux()
+	var srv = &http.Server{
+		Addr:    s.config.ServerAddress,
+		Handler: s.router,
+	}
+
+	s.closer.Add(srv.Shutdown)
+	s.closer.Add(s.store.Shutdown)
 
 	if err := s.configureLogger(); err != nil {
 		return err
@@ -73,9 +98,39 @@ func (s *APIserver) Start() error {
 	s.logger.Info("SERVER_ADDRESS ", s.config.ServerAddress)
 	s.logger.Info("BASE_URL ", s.config.BaseURL)
 	s.logger.Info("FILE_STORAGE_PATH ", s.config.FileStoragePath)
+	s.logger.Info("ENABLE_HTTPS ", s.config.EnableHTTPS)
 
-	s.logger.Info("Staring api server")
-	return http.ListenAndServe(s.config.ServerAddress, s.router)
+	if bytes.Contains([]byte(s.config.BaseURL), []byte("http://")) && s.config.EnableHTTPS {
+		s.logger.Warning("warn: you need use HTTPS in base_url")
+	}
+
+	go func() {
+		if s.config.EnableHTTPS {
+			if err := srv.ListenAndServeTLS("server.crt", "server.key"); err != nil {
+				s.logger.Info(err)
+			}
+		} else {
+			if err := srv.ListenAndServe(); err != nil {
+				s.logger.Info(err)
+			}
+		}
+
+	}()
+
+	s.logger.Infof("Staring api server")
+	<-ctx.Done()
+
+	s.logger.Infof("shutting down server gracefully")
+
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), shutdownTimeout)
+	defer cancel()
+
+	if err := s.closer.Close(shutdownCtx); err != nil {
+		return fmt.Errorf("closer: %v", err)
+	}
+
+	return nil
+
 }
 
 //configureLogger setup logrus
@@ -115,7 +170,7 @@ func (s *APIserver) authenticateUser(next http.Handler) http.Handler {
 
 		var id string
 
-		log.Println("SessionKey:  ", s.config.SessionKey)
+		s.logger.Info("SessionKey:  ", s.config.SessionKey)
 
 		c, err := r.Cookie(sessionName)
 		if err != nil {
@@ -129,7 +184,8 @@ func (s *APIserver) authenticateUser(next http.Handler) http.Handler {
 			cookie := http.Cookie{Name: sessionName, Value: hex.EncodeToString(encryptedCookie), Expires: expiration}
 			http.SetCookie(w, &cookie)
 		} else {
-			fmt.Println("Cookie ", c.Value)
+			// fmt.Println("Cookie ", c.Value)
+			s.logger.Info("Cookie ", c.Value)
 			decoded, err := hex.DecodeString(c.Value)
 			if err != nil {
 				s.logger.Warning("error decode string Cookie ", c.Value)
@@ -153,7 +209,7 @@ func (s *APIserver) authenticateUser(next http.Handler) http.Handler {
 			id = string(decryptedCookie)
 		}
 
-		log.Println("user id: ", id)
+		s.logger.Info("user id: ", id)
 
 		next.ServeHTTP(w, r.WithContext(context.WithValue(r.Context(), ctxKeyUser, id)))
 

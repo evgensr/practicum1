@@ -8,15 +8,14 @@ import (
 	"testing"
 
 	"github.com/gorilla/mux"
-	"github.com/gorilla/sessions"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestAPIserver_HandlerSetURLSimply(t *testing.T) {
 
 	conf := NewConfig()
-	sessionStore := sessions.NewCookieStore([]byte(conf.SessionKey))
-	s := New(&conf, sessionStore)
+	// sessionStore := sessions.NewCookieStore([]byte(conf.SessionKey))
+	s := New(&conf)
 
 	t.Run("create", func(t *testing.T) {
 		URL = "https://habr.com"

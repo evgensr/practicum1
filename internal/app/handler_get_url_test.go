@@ -10,7 +10,6 @@ import (
 
 	"github.com/evgensr/practicum1/internal/helper"
 	"github.com/gorilla/mux"
-	"github.com/gorilla/sessions"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -20,13 +19,28 @@ func TestAPIserver_HandlerGetURL(t *testing.T) {
 	Short = helper.GetShort(URL)
 
 	conf := NewConfig()
-	sessionStore := sessions.NewCookieStore([]byte(conf.SessionKey))
-	s := New(&conf, sessionStore)
+	// sessionStore := sessions.NewCookieStore([]byte(conf.SessionKey))
+	s := New(&conf)
+
+	type response struct {
+		URL string `json:"result" valid:"url"`
+	}
+
+	data := response{
+		URL: s.config.BaseURL + Short,
+	}
+	// json.NewEncoder(w).Encode(data)
+	b, err := json.Marshal(data)
+	if err != nil {
+		t.Log(err)
+		return
+	}
+
 	record := httptest.NewRecorder()
 	jsonValue, _ := json.Marshal(map[string]string{"url": URL})
 	req, _ := http.NewRequest(http.MethodPost, "/api/shorten", bytes.NewBuffer(jsonValue))
 	s.HandlerSetURL().ServeHTTP(record, req)
-	assert.Equal(t, record.Body.String(), "{\"result\":\""+Short+"\"}\n")
+	assert.Equal(t, record.Body.String(), string(b)+"\n")
 
 	t.Run("redirect 307", func(t *testing.T) {
 		path := fmt.Sprintf("/%s", Short)
