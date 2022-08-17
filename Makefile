@@ -71,6 +71,7 @@ open-adminer:
 	@echo "[*] $@"
 	open http://localhost:8081/?pgsql=db&username=postgres&db=restapi_dev&ns=public
 
+
 # create server key ############################################################
 server.key:
 	@echo "[*] $@"
