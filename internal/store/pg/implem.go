@@ -1,9 +1,13 @@
 package pg
 
 import (
+	"context"
 	"errors"
+	"fmt"
 	"log"
 	"strings"
+
+	"github.com/evgensr/practicum1/internal/store"
 )
 
 //Get take an entry by short name
@@ -86,5 +90,33 @@ func (box *Box) Set(line Line) error {
 //Delete change the status of an entry to a deleted one
 func (box *Box) Delete(line []Line) error {
 	box.chTaskDeleteURL <- line
+	return nil
+}
+
+func (box *Box) GetStats() (store.Urls, store.Users, error) {
+
+	var urls store.Urls
+	var users store.Users
+
+	row := box.db.QueryRow("SELECT count(*) FROM short;")
+	err := row.Scan(&urls)
+	if err != nil {
+		return 0, 0, fmt.Errorf("DB Error: %v", err)
+	}
+
+	row = box.db.QueryRow("SELECT count(DISTINCT user_id) FROM short;")
+	err = row.Scan(&users)
+	if err != nil {
+		return 0, 0, fmt.Errorf("DB Error: %v", err)
+	}
+
+	return urls, users, nil
+}
+
+func (box *Box) Shutdown(ctx context.Context) error {
+
+	if err := box.db.Close(); err != nil {
+		return err
+	}
 	return nil
 }

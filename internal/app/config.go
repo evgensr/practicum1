@@ -20,6 +20,7 @@ type Config struct {
 	DatabaseDSN     string `json:"database_dsn" env:"DATABASE_DSN"`
 	EnableHTTPS     bool   `json:"enable_https" env:"ENABLE_HTTPS" envDefault:"false"`
 	ConfigFile      string `env:"CONFIG"`
+	TrustedSubnet   string `json:"trusted_subnet" env:"TRUSTED_SUBNET"`
 }
 
 func NewConfig() Config {
@@ -73,13 +74,18 @@ type response struct {
 	URL string `json:"result" valid:"url"`
 }
 
-type Line = store.Line
+type (
+	Line = store.Line
+	// Urls  int // количество сокращённых URL в сервисе
+	// Users int // количество пользователей в сервисе
+)
 
 type Storage interface {
 	Get(key string) (Line, error)
 	Set(Line) error
 	Delete([]Line) error
 	GetByUser(key string) []Line
+	GetStats() (store.Urls, store.Users, error)
 	Shutdown(ctx context.Context) error
 }
 

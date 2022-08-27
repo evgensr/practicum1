@@ -2,7 +2,6 @@
 package pg
 
 import (
-	"context"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -97,13 +96,5 @@ func RunMigrations(dsn string, migrationsPath string) error {
 	}
 
 	fmt.Println("Migrated successfully")
-	return nil
-}
-
-func (box *Box) Shutdown(ctx context.Context) error {
-
-	if err := box.db.Close(); err != nil {
-		return err
-	}
 	return nil
 }

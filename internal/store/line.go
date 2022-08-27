@@ -7,3 +7,9 @@ type Line struct {
 	CorrelationID string `json:"correlation_id"`
 	Status        int    `json:"status"`
 }
+
+type (
+	// Line = store.Line
+	Urls  int // количество сокращённых URL в сервисе
+	Users int // количество пользователей в сервисе
+)

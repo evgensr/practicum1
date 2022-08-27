@@ -1,7 +1,10 @@
 package memory
 
 import (
+	"context"
 	"errors"
+
+	"github.com/evgensr/practicum1/internal/store"
 )
 
 func (box *Box) Get(key string) (Line, error) {
@@ -70,5 +73,30 @@ func (box *Box) Delete(line []Line) error {
 			}
 		}
 	}
+	return nil
+}
+
+func (box *Box) GetStats() (store.Urls, store.Users, error) {
+	var urls store.Urls
+
+	m := make(map[string]bool)
+
+	for _, k := range box.Items {
+
+		m[k.User] = true // не важно значение, важно сколько уникальных пользователей
+
+		if len(k.URL) > 0 {
+			urls++
+		}
+	}
+
+	users := store.Users(len(m))
+	users--
+
+	return urls, users, nil
+}
+
+func (box *Box) Shutdown(ctx context.Context) error {
+
 	return nil
 }

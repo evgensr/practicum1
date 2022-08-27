@@ -27,7 +27,7 @@ func (s *APIserver) GzipHandleEncode(next http.Handler) http.Handler {
 		if !strings.Contains(r.Header.Get("Accept-Encoding"), "gzip") {
 			// если gzip не поддерживается, передаём управление
 			// дальше без изменений
-			s.logger.Info(r.Header.Get("Accept-Encoding"))
+			s.logger.Info("Accept-Encoding", r.Header.Get("Accept-Encoding"))
 			s.logger.Info("Not support gzip")
 			next.ServeHTTP(w, r)
 			return

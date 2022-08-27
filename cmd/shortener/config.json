@@ -1,7 +1,8 @@
 {
   "server_address": "0.0.0.0:8080",
   "base_url": "https://localhost:8080/",
-  "file_storage_path": "store.db",
+  "file_storage_path2": "store.db",
   "database_dsn": "",
-  "enable_https": true
+  "enable_https": false,
+  "trusted_subnet": "127.0.0.1/24"
 }

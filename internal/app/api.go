@@ -8,6 +8,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"net"
 	"net/http"
 	"time"
 
@@ -99,6 +100,7 @@ func (s *APIserver) Start(ctx context.Context) error {
 	s.logger.Info("BASE_URL ", s.config.BaseURL)
 	s.logger.Info("FILE_STORAGE_PATH ", s.config.FileStoragePath)
 	s.logger.Info("ENABLE_HTTPS ", s.config.EnableHTTPS)
+	s.logger.Info("TRUSTED_SUBNET ", s.config.TrustedSubnet)
 
 	if bytes.Contains([]byte(s.config.BaseURL), []byte("http://")) && s.config.EnableHTTPS {
 		s.logger.Warning("warn: you need use HTTPS in base_url")
@@ -107,11 +109,11 @@ func (s *APIserver) Start(ctx context.Context) error {
 	go func() {
 		if s.config.EnableHTTPS {
 			if err := srv.ListenAndServeTLS("server.crt", "server.key"); err != nil {
-				s.logger.Info(err)
+				s.logger.Info("listenAndServeTLS", err)
 			}
 		} else {
 			if err := srv.ListenAndServe(); err != nil {
-				s.logger.Info(err)
+				s.logger.Info("listenAndServe", err)
 			}
 		}
 
@@ -139,6 +141,7 @@ func (s *APIserver) configureLogger() error {
 	level, err := logrus.ParseLevel(s.config.LogLevel)
 
 	if err != nil {
+		log.Println("err logrus", err)
 		return err
 	}
 	s.logger.SetLevel(level)
@@ -157,9 +160,44 @@ func (s *APIserver) configureRouter() {
 	s.router.HandleFunc("/api/shorten", s.HandlerSetURL()).Methods(http.MethodPost)
 	s.router.HandleFunc("/api/shorten/batch", s.HandlerShortenBatch()).Methods(http.MethodPost)
 	s.router.HandleFunc("/api/user/urls", s.HandlerDeleteURL()).Methods(http.MethodDelete)
+
 	s.router.Use(s.GzipHandleEncode)
 	s.router.Use(s.GzipHandleDecode)
+
+	// sub := s.router.PathPrefix("/api/internal/").Subrouter()
+	// sub.HandleFunc("/api/internal/stats", s.HandlerGetStatus()).Methods(http.MethodGet)
 	// s.router.Use(s.Log)
+
+	private := s.router.PathPrefix("/api/internal").Subrouter()
+	private.Use(s.trustedSubnet)
+	private.HandleFunc("/stats", s.HandlerGetStatus()).Methods("GET")
+
+}
+
+//trustedSubnet
+
+func (s *APIserver) trustedSubnet(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+		remoteIP := helper.GetRemoteIPAddr(r)
+
+		if remoteIP == nil {
+			http.Error(w, "", http.StatusForbidden)
+			return
+		}
+		_, subnet, err := net.ParseCIDR(s.config.TrustedSubnet)
+		if err != nil {
+			http.Error(w, err.Error(), http.StatusInternalServerError)
+			return
+		}
+
+		if !subnet.Contains(remoteIP) {
+			http.Error(w, "", http.StatusForbidden)
+			return
+		}
+		next.ServeHTTP(w, r)
+
+	})
 
 }
 
@@ -230,30 +268,3 @@ func (s *APIserver) respond(w http.ResponseWriter, r *http.Request, code int, da
 		json.NewEncoder(w).Encode(data)
 	}
 }
-
-//CreateTable creates a short table if it does not exist
-//func (s *APIserver) CreateTable() error {
-//	log.Println("config Database: ", s.config.DatabaseDSN)
-//	db, err := sql.Open("postgres", s.config.DatabaseDSN)
-//	if err != nil {
-//		log.Println("create table func ", err)
-//		return err
-//	}
-//	if err := db.Ping(); err != nil {
-//		log.Println("ping err ", err)
-//		return err
-//	}
-//
-//	if _, err := db.Exec("CREATE TABLE  IF NOT EXISTS short" +
-//		"(id serial primary key," +
-//		"original_url varchar(4096) not null," +
-//		"short_url varchar(32) UNIQUE not null," +
-//		"user_id varchar(36) not null," +
-//		"correlation_id varchar(36) null," +
-//		"status smallint not null DEFAULT 0);"); err != nil {
-//		return errors.New("error sql ")
-//	}
-//
-//	return nil
-//
-//}

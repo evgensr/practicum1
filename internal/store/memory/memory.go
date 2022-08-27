@@ -2,7 +2,6 @@
 package memory
 
 import (
-	"context"
 	"sync"
 
 	"github.com/evgensr/practicum1/internal/store"
@@ -60,9 +59,4 @@ func fineDuplicate(items *Box, str string) bool {
 		}
 	}
 	return false
-}
-
-func (box *Box) Shutdown(ctx context.Context) error {
-
-	return nil
 }

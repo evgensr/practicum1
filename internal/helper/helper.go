@@ -9,6 +9,9 @@ import (
 	"encoding/hex"
 	"fmt"
 	"log"
+	"net"
+	"net/http"
+	"strings"
 
 	"github.com/google/uuid"
 )
@@ -110,4 +113,27 @@ func AddSlash(s string) string {
 		s = s + `/`
 	}
 	return s
+}
+
+// GetRemoteIPAddr
+func GetRemoteIPAddr(r *http.Request) net.IP {
+	xri := r.Header.Get("X-Real-IP")
+	remoteIP := net.ParseIP(xri)
+
+	if remoteIP == nil {
+		ips := r.Header.Get("X-Forwarded-For")
+		splitIPs := strings.Split(ips, ",")
+		xri = splitIPs[0]
+		remoteIP = net.ParseIP(xri)
+	}
+
+	if remoteIP == nil {
+		ips := r.RemoteAddr
+		splitIPs := strings.Split(ips, ":")
+		xri = splitIPs[0]
+		remoteIP = net.ParseIP(xri)
+		return remoteIP
+	}
+
+	return remoteIP
 }

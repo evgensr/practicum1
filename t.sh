@@ -80,3 +80,6 @@ go test -bench=. -memprofile=base.pprof
 
 
 go tool pprof -top -diff_base=base.pprof result.pprof
+
+
+curl -v -i   http://localhost:8080/api/internal/stats
