@@ -53,7 +53,6 @@ func GzipHandleDecode(next http.Handler) http.Handler {
 			return
 		}
 
-		log.Fatal("dddd")
 		reader, err := gzip.NewReader(r.Body)
 		if err != nil {
 			log.Println(err)
