@@ -69,6 +69,14 @@ func New(config *Config) *APIserver {
 	}
 }
 
+func (s *APIserver) GetStore() Storage {
+	return s.store
+}
+
+func (s *APIserver) GetLog() *logrus.Logger {
+	return s.logger
+}
+
 // Start web server
 func (s *APIserver) Start(ctx context.Context) error {
 

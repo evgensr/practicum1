@@ -7,10 +7,14 @@ import (
 	"fmt"
 	"io/ioutil"
 	"log"
+	"net"
 	"os/signal"
 	"syscall"
 
 	"github.com/evgensr/practicum1/internal/app"
+	grpchandler "github.com/evgensr/practicum1/internal/grpc_handler"
+	"github.com/evgensr/practicum1/internal/pb"
+	"google.golang.org/grpc"
 )
 
 var buildVersion string = "N/A" // application version
@@ -49,8 +53,30 @@ func main() {
 
 	server := app.New(&conf)
 
+	// определяем порт для сервера
+	listen, err := net.Listen("tcp", ":3200")
+	if err != nil {
+		server.GetLog().Fatal(err)
+	}
+
+	// создаём gRPC-сервер без зарегистрированной службы
+	ss := grpc.NewServer()
+	grpcHandler := grpchandler.NewGRPCHandler(server.GetStore())
+	// регистрируем сервис
+
+	pb.RegisterURLServer(ss, grpcHandler)
+
+	go func() {
+
+		server.GetLog().Info("Start gRPC server")
+		// получаем запрос gRPC
+		if err := ss.Serve(listen); err != nil {
+			server.GetLog().Fatal(err)
+		}
+	}()
+
 	if err := server.Start(ctx); err != nil {
-		log.Fatal(err)
+		server.GetLog().Fatal(err)
 	}
 
 }

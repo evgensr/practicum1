@@ -26,7 +26,7 @@ BUILD_DATE=$(shell date -u +%Y-%m-%dT%H:%M:%SZ)
 
 
 all: download test build
-.PHONY: all download test build build-linux install build-staticlint test-bench cover-total pg open-adminer
+.PHONY: all download test build build-linux install build-staticlint test-bench cover-total pg open-adminer generate tidy
 
 download:
 	@echo "[*] $@"
@@ -40,6 +40,10 @@ test-bench: download
 	@echo "[*] $@"
 	$(GOTEST) -v $(TESTS) -bench . -benchmem
 
+
+tidy: download
+	@echo "[*] $@"
+	go mod tidy
 
 coverage:
 	@echo "[*] $@"
