@@ -72,7 +72,7 @@ message DeleteBatchResponse {
 }
 
 message GetStatsRequest {
-  string ip_address = 1;
+
 }
 
 message GetStatsResponse {

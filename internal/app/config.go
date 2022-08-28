@@ -21,6 +21,7 @@ type Config struct {
 	EnableHTTPS     bool   `json:"enable_https" env:"ENABLE_HTTPS" envDefault:"false"`
 	ConfigFile      string `env:"CONFIG"`
 	TrustedSubnet   string `json:"trusted_subnet" env:"TRUSTED_SUBNET"`
+	GrpcPort        string `json:"grpc_port" env:"GRPC_PORT" envDefault:":3200"`
 }
 
 func NewConfig() Config {
@@ -32,15 +33,6 @@ func NewConfig() Config {
 	if err != nil {
 		log.Fatalf("[ERROR] failed to parse flags: %v", err)
 	}
-
-	//flag.StringVar(&conf.ServerAddress, "a", conf.ServerAddress, "SERVER_ADDRESS")
-	//flag.StringVar(&conf.BaseURL, "b", conf.BaseURL, "BASE_URL")
-	//flag.StringVar(&conf.FileStoragePath, "f", conf.FileStoragePath, "FILE_STORAGE_PATH")
-	//flag.StringVar(&conf.DatabaseDSN, "d", conf.DatabaseDSN, "DATABASE_DSN")
-	//flag.BoolVar(&conf.EnableHTTPS, "s", conf.EnableHTTPS, "ENABLE_HTTPS, files needed server.crt and server.key in the current directory")
-	//flag.StringVar(&conf.ConfigFile, "c", conf.ConfigFile, "JSON config file")
-	//
-	//flag.Parse()
 
 	if len(conf.ConfigFile) > 0 {
 
@@ -97,5 +89,6 @@ func (c *Config) Init() {
 	flag.StringVar(&c.DatabaseDSN, "d", c.DatabaseDSN, "DATABASE_DSN")
 	flag.BoolVar(&c.EnableHTTPS, "s", c.EnableHTTPS, "ENABLE_HTTPS, files needed server.crt and server.key in the current directory")
 	flag.StringVar(&c.ConfigFile, "c", c.ConfigFile, "JSON config file")
+	flag.StringVar(&c.GrpcPort, "g", c.GrpcPort, "grpc port")
 
 }

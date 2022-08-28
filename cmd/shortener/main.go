@@ -54,7 +54,7 @@ func main() {
 	server := app.New(&conf)
 
 	// определяем порт для сервера
-	listen, err := net.Listen("tcp", ":3200")
+	listen, err := net.Listen("tcp", conf.GrpcPort)
 	if err != nil {
 		server.GetLog().Fatal(err)
 	}
@@ -68,7 +68,7 @@ func main() {
 
 	go func() {
 
-		server.GetLog().Info("Start gRPC server")
+		server.GetLog().Info("Start gRPC server ", conf.GrpcPort)
 		// получаем запрос gRPC
 		if err := ss.Serve(listen); err != nil {
 			server.GetLog().Fatal(err)
