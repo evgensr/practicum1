@@ -1,102 +1,82 @@
 package main
 
 import (
-	"crypto/md5"
-	"encoding/hex"
+	"context"
+	"encoding/json"
+	"flag"
+	"fmt"
+	"io/ioutil"
 	"log"
-	"net/http"
+	"net"
+	"os/signal"
+	"syscall"
+
+	"github.com/evgensr/practicum1/internal/app"
+	grpchandler "github.com/evgensr/practicum1/internal/grpc_handler"
+	"github.com/evgensr/practicum1/internal/pb"
+	"google.golang.org/grpc"
 )
 
-const (
-	port = "8080"
+var buildVersion string = "N/A" // application version
+var buildDate string = "N/A"    // application data
+var buildCommit string = "N/A"  // commit id
+
+type (
+	Urls  int // количество сокращённых URL в сервисе
+	Users int // количество пользователей в сервисе
 )
-
-var mapURL = make(map[string]string)
-
-// handlerURL — обработчик запроса.
-func handlerURL(w http.ResponseWriter, r *http.Request) {
-
-	switch r.Method {
-	// если методом POST
-	case "POST":
-		log.Println("post request")
-
-		// Call ParseForm() to parse the raw query and update r.PostForm and r.Form.
-		if err := r.ParseForm(); err != nil {
-			log.Printf("ParseForm() err: %v", err)
-			return
-		}
-
-		address := r.FormValue("address")
-		hash := getHash(address)
-		log.Println(hash)
-		mapURL[hash] = address
-		log.Printf("Address = %s\n", address)
-		w.WriteHeader(201)
-		w.Write([]byte("http://localhost:" + port + "/" + hash))
-
-		// mapURL[]
-	case "GET":
-		// hash := getHash(r.RequestURI)
-		// url := getHash(r.RequestURI)
-		// url := r.RequestURI
-		// inputFmt := r.RequestURI[1:]
-		//log.Println(inputFmt)
-		urlHash := r.RequestURI[1:]
-		log.Println(urlHash)
-
-		val, exists := mapURL[urlHash]
-		log.Println(mapURL)
-		if exists {
-			log.Println(val)
-			w.Header().Set("Location", val)
-			w.WriteHeader(307)
-			w.Write(nil)
-		} else {
-			delete(mapURL, urlHash)
-			w.WriteHeader(400)
-		}
-		// md5.Sum()
-		// data := []byte(r.RequestURI)
-		// h := md5.New()
-		// h.Sum(data)
-		// fmt.Println(time.RFC822Z, md5.Sum(data), h.Sum(data), h.Sum([]byte("/12")))
-		// fmt.Println("GET")
-	}
-
-	// fmt.Println(r.Header)
-	// fmt.Println(time.RFC822Z, r.RequestURI)
-
-	// w.Write([]byte("<h1>Hello, World</h1>"))
-}
-
-func form(w http.ResponseWriter, r *http.Request) {
-
-	log.Println("form")
-	http.ServeFile(w, r, "form.html")
-}
-
-func getHash(text string) string {
-	hasher := md5.New()
-	hasher.Write([]byte(text))
-	return hex.EncodeToString(hasher.Sum(nil))
-}
 
 func main() {
 
-	log.Println("start server")
+	ctx, stop := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+	defer stop()
 
-	// маршрутизация запросов обработчику
-	http.HandleFunc("/", handlerURL)
-	http.HandleFunc("/create", form)
+	conf := app.NewConfig()
 
-	http.Handle("/favicon.ico", http.NotFoundHandler())
+	conf.Init()
+	flag.Parse()
 
-	// запуск сервера с адресом localhost, порт 8081
-	err := http.ListenAndServe(":"+port, nil)
+	fmt.Printf("Build version: %s\n", buildVersion)
+	fmt.Printf("Build date: %s\n", buildDate)
+	fmt.Printf("Build commit: %s\n", buildCommit)
 
+	if len(conf.ConfigFile) > 0 {
+		// Read and parse JSON file if flag -c with value exists
+		jsonFileData, err := ioutil.ReadFile(conf.ConfigFile)
+		if err != nil {
+			log.Fatal(err)
+		}
+		if err = json.Unmarshal(jsonFileData, &conf); err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	server := app.New(&conf)
+
+	// определяем порт для сервера
+	listen, err := net.Listen("tcp", conf.GrpcPort)
 	if err != nil {
-		log.Fatal(err)
+		server.GetLog().Fatal(err)
+	}
+
+	// создаём gRPC-сервер без зарегистрированной службы
+	ss := grpc.NewServer()
+	grpcHandler := grpchandler.NewGRPCHandler(server.GetStore())
+	// регистрируем сервис
+
+	pb.RegisterURLServer(ss, grpcHandler)
+
+	go func() {
+
+		server.GetLog().Info("Start gRPC server ", conf.GrpcPort)
+		// получаем запрос gRPC
+		if err := ss.Serve(listen); err != nil {
+			server.GetLog().Fatal(err)
+		}
+	}()
+
+	if err := server.Start(ctx); err != nil {
+		server.GetLog().Fatal(err)
 	}
 
 }
