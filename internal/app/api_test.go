@@ -2,7 +2,6 @@ package app
 
 import (
 	"context"
-	"log"
 	"net/http"
 	"net/http/httptest"
 	"os/signal"
@@ -148,9 +147,12 @@ func TestAPIserver_authenticateUser(t *testing.T) {
 	rw := httptest.NewRecorder()
 	handler := s.authenticateUser(testHandler)
 	// 	handler.ServeHTTP(rw, req)
-	log.Println(handler)
-	log.Println(rw)
-	log.Println(req)
+	// log.Println(handler)
+	// log.Println(rw)
+	// log.Println(req)
+	_ = handler
+	_ = rw
+	_ = req
 
 }
 
@@ -173,4 +175,97 @@ func TestTimer(t *testing.T) {
 
 	tim := s.authenticateUser(authenticateHandler)
 	tim.ServeHTTP(res, req)
+}
+
+func Test_authenticateUser(t *testing.T) {
+
+	conf := NewConfig()
+	conf.SessionKey = "SESSION_KEY"
+	s := New(&conf)
+
+	authenticateHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+	})
+
+	req := httptest.NewRequest(http.MethodGet, "/1", nil)
+
+	res := httptest.NewRecorder()
+
+	req.Header.Set("Cookie", sessionName+"=e4f2c9c7fbd2ae6a775e43a7c60b674aef5ad1d16ed85419c2d57c5234db4e60dd006f5e7d03668977ff13dd670ac50b238402809bd5cd2d2d4c04398a883397")
+
+	authenticateHandler(res, req)
+
+	tim := s.authenticateUser(authenticateHandler)
+	tim.ServeHTTP(res, req)
+
+	req.Header.Set("Cookie", sessionName+"=1")
+
+	authenticateHandler(res, req)
+
+	tim = s.authenticateUser(authenticateHandler)
+	tim.ServeHTTP(res, req)
+}
+
+func Test_trustedSubnet(t *testing.T) {
+
+	conf := NewConfig()
+	conf.TrustedSubnet = "8.8.8.8/24"
+	s := New(&conf)
+
+	authenticateHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+	})
+
+	req := httptest.NewRequest(http.MethodGet, "/1", nil)
+
+	res := httptest.NewRecorder()
+
+	req.Header.Set("Cookie", sessionName+"=e4f2c9c7fbd2ae6a775e43a7c60b674aef5ad1d16ed85419c2d57c5234db4e60dd006f5e7d03668977ff13dd670ac50b238402809bd5cd2d2d4c04398a883397")
+
+	authenticateHandler(res, req)
+
+	tim := s.trustedSubnet(authenticateHandler)
+	tim.ServeHTTP(res, req)
+
+	assert.Equal(t, 403, res.Code)
+
+}
+
+func Test_trustedSubnet2(t *testing.T) {
+
+	conf := NewConfig()
+	conf.TrustedSubnet = ""
+	s := New(&conf)
+
+	authenticateHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+	})
+
+	req := httptest.NewRequest(http.MethodGet, "/1", nil)
+
+	res := httptest.NewRecorder()
+
+	req.Header.Set("Cookie", sessionName+"=e4f2c9c7fbd2ae6a775e43a7c60b674aef5ad1d16ed85419c2d57c5234db4e60dd006f5e7d03668977ff13dd670ac50b238402809bd5cd2d2d4c04398a883397")
+
+	authenticateHandler(res, req)
+
+	tim := s.trustedSubnet(authenticateHandler)
+	tim.ServeHTTP(res, req)
+
+	assert.Equal(t, 500, res.Code)
+
+}
+
+func TestAPIserver_respond(t *testing.T) {
+
+	conf := NewConfig()
+
+	s := New(&conf)
+
+	req := httptest.NewRequest(http.MethodGet, "/1", nil)
+
+	res := httptest.NewRecorder()
+
+	s.respond(res, req, 200, "ok")
+
 }

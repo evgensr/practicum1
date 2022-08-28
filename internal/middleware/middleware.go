@@ -1,4 +1,4 @@
-package app
+package middleware
 
 import (
 	"compress/gzip"
@@ -21,14 +21,10 @@ func (w gzipWriter) Write(b []byte) (int, error) {
 }
 
 // GzipHandleEncode gzip-compression of the response
-func (s *APIserver) GzipHandleEncode(next http.Handler) http.Handler {
+func GzipHandleEncode(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		// проверяем, что клиент поддерживает gzip-сжатие
 		if !strings.Contains(r.Header.Get("Accept-Encoding"), "gzip") {
-			// если gzip не поддерживается, передаём управление
-			// дальше без изменений
-			s.logger.Info("Accept-Encoding", r.Header.Get("Accept-Encoding"))
-			s.logger.Info("Not support gzip")
 			next.ServeHTTP(w, r)
 			return
 		}
@@ -43,22 +39,21 @@ func (s *APIserver) GzipHandleEncode(next http.Handler) http.Handler {
 		defer gz.Close()
 
 		w.Header().Set("Content-Encoding", "gzip")
-		s.logger.Info(r.Header.Get("Accept-Encoding"))
-		s.logger.Info("Support gzip")
-		// передаём обработчику страницы переменную типа gzipWriter для вывода данных
 		next.ServeHTTP(gzipWriter{ResponseWriter: w, Writer: gz}, r)
 	})
 }
 
 // GzipHandleDecode unpacking the request
-func (s *APIserver) GzipHandleDecode(next http.Handler) http.Handler {
+func GzipHandleDecode(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// log.Fatal(r.Header.Get("Content-Encoding"))
 		// проверяем, что клиент поддерживает gzip-сжатие
 		if !strings.Contains(r.Header.Get("Content-Encoding"), "gzip") {
 			next.ServeHTTP(w, r)
 			return
 		}
 
+		log.Fatal("dddd")
 		reader, err := gzip.NewReader(r.Body)
 		if err != nil {
 			log.Println(err)

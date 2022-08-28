@@ -13,6 +13,7 @@ import (
 	"time"
 
 	"github.com/evgensr/practicum1/internal/helper"
+	"github.com/evgensr/practicum1/internal/middleware"
 	"github.com/evgensr/practicum1/internal/store/file"
 	"github.com/evgensr/practicum1/internal/store/memory"
 	"github.com/evgensr/practicum1/internal/store/pg"
@@ -169,8 +170,8 @@ func (s *APIserver) configureRouter() {
 	s.router.HandleFunc("/api/shorten/batch", s.HandlerShortenBatch()).Methods(http.MethodPost)
 	s.router.HandleFunc("/api/user/urls", s.HandlerDeleteURL()).Methods(http.MethodDelete)
 
-	s.router.Use(s.GzipHandleEncode)
-	s.router.Use(s.GzipHandleDecode)
+	s.router.Use(middleware.GzipHandleEncode)
+	s.router.Use(middleware.GzipHandleDecode)
 
 	// sub := s.router.PathPrefix("/api/internal/").Subrouter()
 	// sub.HandleFunc("/api/internal/stats", s.HandlerGetStatus()).Methods(http.MethodGet)
@@ -219,6 +220,8 @@ func (s *APIserver) authenticateUser(next http.Handler) http.Handler {
 		s.logger.Info("SessionKey:  ", s.config.SessionKey)
 
 		c, err := r.Cookie(sessionName)
+		log.Println(c)
+
 		if err != nil {
 			expiration := time.Now().Add(365 * 24 * time.Hour)
 			id = helper.GeneratorUUID()

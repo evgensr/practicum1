@@ -107,19 +107,6 @@ func (box *Box) addItem(item Line) []Line {
 	return box.Items
 }
 
-func removeDuplicateElement(languages []string) []string {
-	result := make([]string, 0, len(languages))
-	temp := map[string]struct{}{}
-	for _, item := range languages {
-		if _, ok := temp[item]; !ok {
-			temp[item] = struct{}{}
-			result = append(result, item)
-		}
-	}
-
-	return result
-}
-
 // fineDuplicate true если находим дубликат
 func fineDuplicate(items *Box, str string) bool {
 

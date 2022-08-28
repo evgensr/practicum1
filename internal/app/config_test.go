@@ -78,3 +78,83 @@ func TestNew(t *testing.T) {
 	//
 	//})
 }
+
+func TestConfig_Init(t *testing.T) {
+	type fields struct {
+		ServerAddress   string
+		BaseURL         string
+		FileStoragePath string
+		LogLevel        string
+		SessionKey      string
+		DatabaseDSN     string
+		EnableHTTPS     bool
+		ConfigFile      string
+		TrustedSubnet   string
+		GrpcPort        string
+	}
+	tests := []struct {
+		name   string
+		fields fields
+	}{
+		{
+			name: "valid",
+			fields: struct {
+				ServerAddress   string
+				BaseURL         string
+				FileStoragePath string
+				LogLevel        string
+				SessionKey      string
+				DatabaseDSN     string
+				EnableHTTPS     bool
+				ConfigFile      string
+				TrustedSubnet   string
+				GrpcPort        string
+			}{ServerAddress: "0.0.0.0:8080",
+				BaseURL:         "http://localhost:8080/",
+				FileStoragePath: "file.db",
+				LogLevel:        "debug",
+				SessionKey:      "SESSION_KEY",
+				DatabaseDSN:     "DatabaseDSN",
+				EnableHTTPS:     false,
+				ConfigFile:      "",
+				TrustedSubnet:   "",
+				GrpcPort:        ":3310"},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			c := &Config{
+				ServerAddress:   tt.fields.ServerAddress,
+				BaseURL:         tt.fields.BaseURL,
+				FileStoragePath: tt.fields.FileStoragePath,
+				LogLevel:        tt.fields.LogLevel,
+				SessionKey:      tt.fields.SessionKey,
+				DatabaseDSN:     tt.fields.DatabaseDSN,
+				EnableHTTPS:     tt.fields.EnableHTTPS,
+				ConfigFile:      tt.fields.ConfigFile,
+				TrustedSubnet:   tt.fields.TrustedSubnet,
+				GrpcPort:        tt.fields.GrpcPort,
+			}
+			c.Init()
+		})
+	}
+}
+
+func TestNewConfig(t *testing.T) {
+	conf := NewConfig()
+
+	tests := []struct {
+		name string
+		want Config
+	}{
+		{
+			name: "valid",
+			want: conf,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			assert.Equalf(t, tt.want, NewConfig(), "NewConfig()")
+		})
+	}
+}

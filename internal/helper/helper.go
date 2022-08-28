@@ -118,6 +118,7 @@ func AddSlash(s string) string {
 // GetRemoteIPAddr
 func GetRemoteIPAddr(r *http.Request) net.IP {
 	xri := r.Header.Get("X-Real-IP")
+	log.Println(xri)
 	remoteIP := net.ParseIP(xri)
 
 	if remoteIP == nil {

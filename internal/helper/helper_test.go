@@ -1,6 +1,10 @@
 package helper
 
 import (
+	"net"
+	"net/http"
+	"net/http/httptest"
+	"strings"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -242,6 +246,58 @@ func TestDecrypted(t *testing.T) {
 				assert.NotEqualf(t, tt.want, got, "Decrypted(%v, %v)", tt.args.msg, tt.args.key)
 
 			}
+		})
+	}
+}
+
+func TestGetRemoteIPAddr(t *testing.T) {
+
+	req := httptest.NewRequest(http.MethodGet, "/", nil)
+
+	ips := req.RemoteAddr
+	splitIPs := strings.Split(ips, ":")
+	xri := splitIPs[0]
+	remoteIP := net.ParseIP(xri)
+
+	tests := []struct {
+		name     string
+		want     net.IP
+		headName string
+		headVal  string
+	}{
+		{
+			name:     "valid",
+			want:     remoteIP,
+			headName: "X-Browse",
+			headVal:  "chrome",
+		},
+
+		{
+			name:     "valid",
+			want:     net.ParseIP("127.0.0.1"),
+			headName: "X-Real-IP",
+			headVal:  "127.0.0.1",
+		},
+
+		{
+			name:     "valid",
+			want:     net.ParseIP("192.0.0.1"),
+			headName: "X-Real-IP",
+			headVal:  "192.0.0.1",
+		},
+		{
+			name:     "valid",
+			want:     net.ParseIP("193.0.0.1"),
+			headName: "X-Forwarded-For",
+			headVal:  "193.0.0.1",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			req.Header.Set(tt.headName, tt.headVal)
+			t.Log(GetRemoteIPAddr(req))
+			assert.Equalf(t, tt.want, GetRemoteIPAddr(req), tt.name)
+			req.Header.Del(tt.headName)
 		})
 	}
 }

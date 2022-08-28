@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/evgensr/practicum1/internal/helper"
+	"github.com/evgensr/practicum1/internal/store"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 	"github.com/stretchr/testify/suite"
@@ -139,6 +140,15 @@ func (s *FileRepositoryTestSuite) TestDelete() {
 		CorrelationID: line.CorrelationID,
 		Status:        1,
 	}, fetched)
+
+}
+
+func (s *FileRepositoryTestSuite) TestGetStats() {
+
+	urls, users, err := s.store.GetStats()
+	assert.NoError(s.T(), err)
+	assert.Equal(s.T(), urls, store.Urls(3))
+	assert.Equal(s.T(), users, store.Users(2))
 
 }
 
