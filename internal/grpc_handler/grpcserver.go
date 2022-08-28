@@ -134,11 +134,6 @@ func (us *URLServer) GetStats(ctx context.Context, in *pb.GetStatsRequest) (*pb.
 			Status: "forbidden",
 		}, nil
 	}
-	if err != nil {
-		return &pb.GetStatsResponse{
-			Status: "bad request",
-		}, nil
-	}
 
 	return &pb.GetStatsResponse{
 		Status: "ok",
